@@ -12,6 +12,7 @@ int main(void){
   switch(scelta){
     case 1:
     crea_mappa();
+    scelta=4;
     break;
     case 2:
     gioca();
