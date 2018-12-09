@@ -5,6 +5,7 @@
 static void crea_scacchiera();
 static void stampa_scacchiera();
 static void termina_creazione();
+int verifica();
 
 
 static struct Cella *scacchiera = NULL;
@@ -47,6 +48,29 @@ static void crea_scacchiera(){
   scanf("%d",&n);
   printf("Creazione della mappa in corso\n");
   scacchiera = malloc(n*n*sizeof(struct Cella));
+
+  int prob[3];
+  int somma=0;
+
+  while(somma<=100){
+    printf("Inserisci la probabilità che non ci sia alcun pericolo: ");
+    prob[0]= verifica();
+    somma+=prob[0];
+    printf("Inserisci la probabilità che non ci sia una trappola: ");
+    prob[1]= verifica();
+    somma+=prob[1];
+    printf("Inserisci la probabilità che non ci sia un alieno: ");
+    prob[2]= verifica();
+    somma+=prob[2];
+    if(somma>100 || somma <100){
+      printf("Errore: la somma delle probabilità deve essere 100, riprovare\n");
+      somma=0;
+      continue;
+    }else{
+      break;
+    }
+
+  }
   printf("Mappa creata con successo.\n");
 }
 
@@ -63,5 +87,17 @@ void gioca(){
 }
 
 void termina_gioco(){
-  
+
+}
+
+int verifica(){
+  int num;
+  do{
+    scanf("%d",&num);
+    if(num<=0){
+      printf("Errore: Inserire un numero positivo: ");
+    }else{
+      return num;
+    }
+  }while(10);
 }
