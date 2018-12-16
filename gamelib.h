@@ -18,7 +18,7 @@ struct Giocatore{
   int x;
   int y;
   int zaino[4];
-  int alieni_uccisi;
+  size_t alieni_uccisi;
 };
 
 struct Cella{

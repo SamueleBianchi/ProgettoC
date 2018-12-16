@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "gamelib.h"
 
 static void crea_scacchiera();
@@ -8,7 +9,7 @@ static void termina_creazione();
 int verifica();
 
 
-static struct Cella *scacchiera = NULL;
+struct Cella *scacchiera = NULL;
 static struct Giocatore Ninja;
 static struct Giocatore Ciccio;
 
@@ -48,7 +49,9 @@ static void crea_scacchiera(){
   scanf("%d",&n);
   printf("Creazione della mappa in corso\n");
   scacchiera = malloc(n*n*sizeof(struct Cella));
-
+  if(scacchiera == NULL){
+    printf("Impossibile creare la scacchiera.\n");
+  }else{
   int prob[3];
   int somma=0;
 
@@ -56,10 +59,10 @@ static void crea_scacchiera(){
     printf("Inserisci la probabilità che non ci sia alcun pericolo: ");
     prob[0]= verifica();
     somma+=prob[0];
-    printf("Inserisci la probabilità che non ci sia una trappola: ");
+    printf("Inserisci la probabilità ci sia una trappola: ");
     prob[1]= verifica();
     somma+=prob[1];
-    printf("Inserisci la probabilità che non ci sia un alieno: ");
+    printf("Inserisci la probabilità ci sia un alieno: ");
     prob[2]= verifica();
     somma+=prob[2];
     if(somma>100 || somma <100){
@@ -71,8 +74,29 @@ static void crea_scacchiera(){
     }
 
   }
-  printf("Mappa creata con successo.\n");
+  time_t t;
+  srand((unsigned) time(&t));
+  int random = 0;
+  for(int i=0; i<n;i++){
+    for(int j=0; j<n;j++){
+      random = rand() % 101;
+      if(random <= prob[0]){
+        scacchiera[i*n+j].pericolo = 0;
+      }else{
+        if(random <= prob[0]+prob[1]){
+          scacchiera[i*n+j].pericolo = 1;
+        }else{
+          scacchiera[i*n+j].pericolo = 2;
+        }
+      }
+        printf("random: %d pericolo %d:\n",random,scacchiera[i*n+j].pericolo);
+      }
+
+
+    }
+  }
 }
+
 
 static void stampa_scacchiera(){
 
@@ -94,7 +118,7 @@ int verifica(){
   int num;
   do{
     scanf("%d",&num);
-    if(num<=0){
+    if(num<0){
       printf("Errore: Inserire un numero positivo: ");
     }else{
       return num;
