@@ -3,14 +3,6 @@
 #include <time.h>
 #include "gamelib.h"
 
-static void crea_scacchiera();
-static void stampa_scacchiera();
-static void termina_creazione();
-int verifica();
-void randomizza_pericoli(int n,struct Cella *scacchiera);
-void randomizza_oggetti(int n,struct Cella *scacchiera);
-
-
 struct Cella *scacchiera = NULL;
 static struct Giocatore Ninja;
 static struct Giocatore Ciccio;
@@ -21,7 +13,6 @@ void crea_mappa(){
   system("clear");
   int scelta;
   do{
-
   printf("\n\tMenu per la creazione della mappa\n1-Crea la scacchiera.\n2-Stampa la scacchiera.\n3-Termina la creazione\n\n");
   scanf("%d",&scelta);
 
@@ -45,7 +36,7 @@ void crea_mappa(){
 }while(scelta > 3);
 }
 
-static void crea_scacchiera(){
+void crea_scacchiera(){
   system("clear");
   printf("Inserisci la dimensione della mappa: ");
   scanf("%d",&n);
@@ -175,7 +166,7 @@ void stampa_scacchiera(){
   }
 }
 
-static void termina_creazione(){
+void termina_creazione(){
 
 }
 
