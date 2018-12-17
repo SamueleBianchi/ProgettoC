@@ -14,6 +14,7 @@ void randomizza_oggetti(int n,struct Cella *scacchiera);
 struct Cella *scacchiera = NULL;
 static struct Giocatore Ninja;
 static struct Giocatore Ciccio;
+int n=0;
 
 void crea_mappa(){
 
@@ -46,7 +47,6 @@ void crea_mappa(){
 
 static void crea_scacchiera(){
   system("clear");
-  int n;
   printf("Inserisci la dimensione della mappa: ");
   scanf("%d",&n);
   printf("Creazione della mappa in corso\n");
@@ -161,8 +161,18 @@ void randomizza_oggetti(int n,struct Cella *scacchiera){
     }
 }
 
-static void stampa_scacchiera(){
-
+void stampa_scacchiera(){
+  if(scacchiera == NULL){
+    printf("Impossibile stampare la scacchiera: la scacchiera non è stata creata.\n");
+  }else{
+    printf("\n");
+    for(int i=0; i<n; ++i){
+      for(int j=0; j<n; ++j){
+        printf("%d ",scacchiera[i*n+j].oggetto);
+      }
+      printf("\n");
+    }
+  }
 }
 
 static void termina_creazione(){
