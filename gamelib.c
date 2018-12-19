@@ -3,14 +3,15 @@
 #include <time.h>
 #include "gamelib.h"
 
-struct Cella *scacchiera = NULL;
+static struct Cella *scacchiera = NULL;
 static struct Giocatore Ninja;
 static struct Giocatore Ciccio;
-int n = 0;
+static unsigned int n = 0;
+static unsigned int turno = 0;
 
 void crea_mappa(){
 
-  system("clear");
+  clear();
   int scelta;
   do{
   printf("\n\tMenu per la creazione della mappa\n1-Crea la scacchiera.\n2-Stampa la scacchiera.\n3-Termina la creazione\n\n");
@@ -32,25 +33,34 @@ void crea_mappa(){
     printf("Errore: opzione non valida (scegliere solo tra le 3 opzioni).\n");
     break;
   }
-
 }while(scelta > 3);
 }
 
 void crea_scacchiera(){
   clear();
   printf("Inserisci la dimensione della mappa: ");
-  scanf("%d",&n);
+  scanf("%u",&n);
   printf("Creazione della mappa in corso\n");
-  scacchiera = malloc(n*n*sizeof(struct Cella));
+  scacchiera = (struct Cella*) malloc(n*n*sizeof(struct Cella));
   if(scacchiera == NULL){
     printf("Impossibile creare la scacchiera.\n");
   }else{
+    time_t t;
+    srand((unsigned) time(&t));
     randomizza_pericoli(n,scacchiera);
     randomizza_oggetti(n,scacchiera);
+    Ciccio.x = rand() % n;
+    Ciccio.y = rand() % n;
+    Ciccio.stato = solo_vita;
+    Ninja.x = rand() % n;
+    Ninja.y = rand() % n;
+    Ninja.stato = solo_vita;
+    printf("Ciccio inizializzato alle coordinate (%d,%d) stato: %s\n", Ciccio.x, Ciccio.y,ritorna_stato(Ciccio.stato));
+    printf("Ninja inizializzato alle coordinate (%d,%d) stato: %s\n", Ninja.x, Ninja.y, ritorna_stato(Ninja.stato));
   }
 }
 
-void randomizza_pericoli(int n,struct Cella *scacchiera){
+void randomizza_pericoli(unsigned int n,struct Cella *scacchiera){
   int prob[3];
   int somma = 0;
 
@@ -72,8 +82,7 @@ void randomizza_pericoli(int n,struct Cella *scacchiera){
       break;
     }
   }
-  time_t t;
-  srand((unsigned) time(&t));
+
   int random = 0;
   for(int i=0; i<n;i++){
     for(int j=0; j<n;j++){
@@ -88,17 +97,15 @@ void randomizza_pericoli(int n,struct Cella *scacchiera){
         }
       }
       }
-
-
     }
 }
 
-void randomizza_oggetti(int n,struct Cella *scacchiera){
+void randomizza_oggetti(unsigned int n,struct Cella *scacchiera){
   int prob[5];
   int somma=0;
 
   while(somma<=100){
-    printf("Inserisci la probabilità che non ci sia alcun oggetto: ");
+    printf("\nInserisci la probabilità che non ci sia alcun oggetto: ");
     prob[0]= verifica();
     somma+=prob[0];
     printf("Inserisci la probabilità che ci sia un medikit: ");
@@ -121,8 +128,6 @@ void randomizza_oggetti(int n,struct Cella *scacchiera){
       break;
     }
   }
-  time_t t;
-  srand((unsigned) time(&t));
   int random = 0;
   for(int i=0; i<n;i++){
     for(int j=0; j<n;j++){
@@ -145,12 +150,11 @@ void randomizza_oggetti(int n,struct Cella *scacchiera){
         }
       }
       }
-
-
     }
 }
 
 void stampa_scacchiera(){
+  clear();
   if(scacchiera == NULL){
     printf("Impossibile stampare la scacchiera: la scacchiera non è stata creata.\n");
   }else{
@@ -165,11 +169,15 @@ void stampa_scacchiera(){
 }
 
 void termina_creazione(){
-
+  clear();
 }
 
 void gioca(){
-
+  if(scacchiera == NULL){
+    printf("Non puoi giocare se non crei la scacchiera!\n");
+  }else{
+    printf("Puoi giocare\n");
+  }
 }
 
 void termina_gioco(){
@@ -197,4 +205,23 @@ int verifica(){
       return num;
     }
   }while(10);
+}
+
+const char *ritorna_stato(enum Stato_giocatore stato){
+  switch(stato){
+    case 0:
+    return "Vulnerabile";
+    break;
+    case 1:
+    return "Scudo e vita";
+    break;
+    case 2:
+    return "Solo vita";
+    break;
+    case 3:
+    return "Solo scudo";
+    default:
+    return "ERR";
+  }
+
 }

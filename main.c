@@ -16,6 +16,7 @@ int main(void){
     break;
     case 2:
     gioca();
+    scelta = 4;
     break;
     case 3:
     termina_gioco();

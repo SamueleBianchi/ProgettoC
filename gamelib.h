@@ -34,8 +34,10 @@ void stampa_scacchiera();
 
 void termina_creazione();
 
-void randomizza_pericoli(int n,struct Cella *scacchiera);
+void randomizza_pericoli(unsigned int n,struct Cella *scacchiera);
 
-void randomizza_oggetti(int n,struct Cella *scacchiera);
+void randomizza_oggetti(unsigned int n,struct Cella *scacchiera);
+
+const char *ritorna_stato(enum Stato_giocatore stato);
 
 void clear();
