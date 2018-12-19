@@ -37,3 +37,5 @@ void termina_creazione();
 void randomizza_pericoli(int n,struct Cella *scacchiera);
 
 void randomizza_oggetti(int n,struct Cella *scacchiera);
+
+void clear();

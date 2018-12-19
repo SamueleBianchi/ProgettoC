@@ -6,7 +6,7 @@
 struct Cella *scacchiera = NULL;
 static struct Giocatore Ninja;
 static struct Giocatore Ciccio;
-int n=0;
+int n = 0;
 
 void crea_mappa(){
 
@@ -19,11 +19,11 @@ void crea_mappa(){
   switch(scelta){
     case 1:
     crea_scacchiera();
-    scelta=4;
+    scelta = 4;
     break;
     case 2:
     stampa_scacchiera();
-    scelta=4;
+    scelta = 4;
     break;
     case 3:
     termina_creazione();
@@ -37,7 +37,7 @@ void crea_mappa(){
 }
 
 void crea_scacchiera(){
-  system("clear");
+  clear();
   printf("Inserisci la dimensione della mappa: ");
   scanf("%d",&n);
   printf("Creazione della mappa in corso\n");
@@ -52,21 +52,21 @@ void crea_scacchiera(){
 
 void randomizza_pericoli(int n,struct Cella *scacchiera){
   int prob[3];
-  int somma=0;
+  int somma = 0;
 
   while(somma<=100){
     printf("Inserisci la probabilità che non ci sia alcun pericolo: ");
-    prob[0]= verifica();
-    somma+=prob[0];
+    prob[0] = verifica();
+    somma += prob[0];
     printf("Inserisci la probabilità ci sia una trappola: ");
     prob[1]= verifica();
-    somma+=prob[1];
+    somma += prob[1];
     printf("Inserisci la probabilità ci sia un alieno: ");
-    prob[2]= verifica();
+    prob[2] = verifica();
     somma+=prob[2];
     if(somma>100 || somma <100){
       printf("Errore: la somma delle probabilità deve essere 100, riprovare\n");
-      somma=0;
+      somma = 0;
       continue;
     }else{
       break;
@@ -87,7 +87,6 @@ void randomizza_pericoli(int n,struct Cella *scacchiera){
           scacchiera[i*n+j].pericolo = 2;
         }
       }
-        printf("random: %d pericolo %d:\n",random,scacchiera[i*n+j].pericolo);
       }
 
 
@@ -145,7 +144,6 @@ void randomizza_oggetti(int n,struct Cella *scacchiera){
           }
         }
       }
-        printf("random: %d pericolo %d:\n",random,scacchiera[i*n+j].oggetto);
       }
 
 
@@ -177,6 +175,16 @@ void gioca(){
 void termina_gioco(){
   free(scacchiera);
   scacchiera = NULL;
+}
+
+void clear(){
+    #if defined(__linux__) || defined(__unix__) || defined(__APPLE__)
+        system("clear");
+    #endif
+
+    #if defined(_WIN32) || defined(_WIN64)
+        system("cls");
+    #endif
 }
 
 int verifica(){
