@@ -159,12 +159,15 @@ void stampa_scacchiera(){
     printf("Impossibile stampare la scacchiera: la scacchiera non è stata creata.\n");
   }else{
     printf("\n");
+
     for(int i=0; i<n; ++i){
       for(int j=0; j<n; ++j){
-        printf("%d ",scacchiera[i*n+j].oggetto);
+        printf("| %s-%s |",ritorna_oggetto(scacchiera[i*n+j].oggetto), ritorna_pericolo(scacchiera[i*n+j].pericolo));
       }
       printf("\n");
     }
+    printf("\n");
+    legenda();
   }
 }
 
@@ -213,7 +216,7 @@ const char *ritorna_stato(enum Stato_giocatore stato){
     return "Vulnerabile";
     break;
     case 1:
-    return "Scudo e vita";
+    return "Scudo e Vita";
     break;
     case 2:
     return "Solo vita";
@@ -224,4 +227,47 @@ const char *ritorna_stato(enum Stato_giocatore stato){
     return "ERR";
   }
 
+}
+
+const char *ritorna_oggetto(enum Tipo_oggetto oggetto){
+  switch(oggetto){
+    case 0:
+    return "Ne";
+    break;
+    case 1:
+    return "Me";
+    break;
+    case 2:
+    return "Po";
+    break;
+    case 3:
+    return "Ma";
+    break;
+    case 4:
+    return "Cl";
+    default:
+    return "ERR";
+  }
+}
+  const char *ritorna_pericolo(enum Tipo_pericolo pericolo){
+    switch(pericolo){
+      case 0:
+      return "Np";
+      break;
+      case 1:
+      return "Tr";
+      break;
+      case 2:
+      return "Al";
+      break;
+      default:
+      return "ERR";
+    }
+
+}
+
+void legenda(){
+  printf("Legenda:\n");
+  printf("\tOggetti:\n-Ne : nessun oggetto\n-Me : medikit\n-Po : pozione\n-Ma : materiale\n-Cl : colpi lanciarazzi\n");
+  printf("\n\tPericoli:\n-Ne : nessun pericolo\n-Tr : trappola\n-Al : alieno\n");
 }

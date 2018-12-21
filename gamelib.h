@@ -40,4 +40,10 @@ void randomizza_oggetti(unsigned int n,struct Cella *scacchiera);
 
 const char *ritorna_stato(enum Stato_giocatore stato);
 
+const char *ritorna_oggetto(enum Tipo_oggetto oggetto);
+
+const char *ritorna_pericolo(enum Tipo_pericolo pericolo);
+
+void legenda();
+
 void clear();
