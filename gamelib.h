@@ -8,6 +8,7 @@ enum Stato_giocatore {vulnerabile, scudo_vita, solo_vita, solo_scudo};
 enum Tipo_oggetto {nessuno, medikit, pozione, materiale, colpi_lanciarazzi};
 
 struct Giocatore{
+  char nome[20];
   enum Stato_giocatore stato;
   int x;
   int y;
@@ -45,5 +46,11 @@ const char *ritorna_oggetto(enum Tipo_oggetto oggetto);
 const char *ritorna_pericolo(enum Tipo_pericolo pericolo);
 
 void legenda();
+
+void muovi(struct Giocatore giocatore);
+
+void usa_oggetto(struct Giocatore giocatore);
+
+void turni(struct Giocatore Giocatore);
 
 void clear();

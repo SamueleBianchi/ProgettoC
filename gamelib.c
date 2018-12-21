@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include "gamelib.h"
 
 static struct Cella *scacchiera = NULL;
@@ -37,6 +38,7 @@ void crea_mappa(){
 }
 
 void crea_scacchiera(){
+  if(scacchiera == NULL){
   clear();
   printf("Inserisci la dimensione della mappa: ");
   scanf("%u",&n);
@@ -58,6 +60,10 @@ void crea_scacchiera(){
     printf("Ciccio inizializzato alle coordinate (%d,%d) stato: %s\n", Ciccio.x, Ciccio.y,ritorna_stato(Ciccio.stato));
     printf("Ninja inizializzato alle coordinate (%d,%d) stato: %s\n", Ninja.x, Ninja.y, ritorna_stato(Ninja.stato));
   }
+}else{
+  clear();
+  printf("Impossibile creare la scacchiera, scacchiera già creata.\n");
+}
 }
 
 void randomizza_pericoli(unsigned int n,struct Cella *scacchiera){
@@ -179,7 +185,16 @@ void gioca(){
   if(scacchiera == NULL){
     printf("Non puoi giocare se non crei la scacchiera!\n");
   }else{
-    printf("Puoi giocare\n");
+    strcpy(Ciccio.nome , "Ciccio");
+    strcpy(Ninja.nome , "Ninja");
+    do{
+    ++turno;
+    if(turno%2){
+      turni(Ciccio);
+    }else{
+      turni(Ninja);
+    }
+  }while(1);
   }
 }
 
@@ -249,7 +264,8 @@ const char *ritorna_oggetto(enum Tipo_oggetto oggetto){
     return "ERR";
   }
 }
-  const char *ritorna_pericolo(enum Tipo_pericolo pericolo){
+
+const char *ritorna_pericolo(enum Tipo_pericolo pericolo){
     switch(pericolo){
       case 0:
       return "Np";
@@ -270,4 +286,31 @@ void legenda(){
   printf("Legenda:\n");
   printf("\tOggetti:\n-Ne : nessun oggetto\n-Me : medikit\n-Po : pozione\n-Ma : materiale\n-Cl : colpi lanciarazzi\n");
   printf("\n\tPericoli:\n-Ne : nessun pericolo\n-Tr : trappola\n-Al : alieno\n");
+}
+
+void muovi(struct Giocatore giocatore){
+  unsigned scelta = 0;
+  
+}
+
+void usa_oggetto(struct Giocatore giocatore){
+
+}
+
+void turni(struct Giocatore giocatore){
+  unsigned scelta = 0;
+  printf("E' il turno di: %s\t Turno: %u\n", giocatore.nome, turno);
+  printf("\tMenu di gioco:\n1-Muoviti\n2-Usa oggetto\n");
+  scanf("%u",&scelta);
+  switch (scelta) {
+    case 1:
+    muovi(giocatore);
+    break;
+    case 2:
+    usa_oggetto(giocatore);
+    break;
+    default:
+    printf("Opzione non valida");
+    break;
+  }
 }
