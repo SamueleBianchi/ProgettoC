@@ -190,11 +190,11 @@ void gioca(){
     do{
     ++turno;
     if(turno%2){
+      clear();
       turni(&Ciccio);
-      printf("Coordinate giocatore: (%d, %d)\n",Ciccio.x,Ciccio.y);
     }else{
+      clear();
       turni(&Ninja);
-      printf("Coordinate giocatore: (%d, %d)\n",Ninja.x,Ninja.y);
     }
 
   }while(1);

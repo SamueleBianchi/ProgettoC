@@ -2,7 +2,7 @@
 #include "gamelib.h"
 
 int main(void){
-
+  clear();
   int scelta = 0;
   do{
 
@@ -22,6 +22,7 @@ int main(void){
     termina_gioco();
     break;
     default:
+    clear();
     printf("Errore: opzione non valida (scegliere solo tra le 3 opzioni).\n");
     break;
   }
