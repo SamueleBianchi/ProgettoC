@@ -190,10 +190,13 @@ void gioca(){
     do{
     ++turno;
     if(turno%2){
-      turni(Ciccio);
+      turni(&Ciccio);
+      printf("Coordinate giocatore: (%d, %d)\n",Ciccio.x,Ciccio.y);
     }else{
-      turni(Ninja);
+      turni(&Ninja);
+      printf("Coordinate giocatore: (%d, %d)\n",Ninja.x,Ninja.y);
     }
+
   }while(1);
   }
 }
@@ -320,26 +323,22 @@ void destra(struct Giocatore* giocatore){
   }
 }
 
-void muovi(struct Giocatore giocatore){
+void muovi(struct Giocatore* giocatore){
   char scelta;
   printf("\n\tComandi (premere il comando e il tasto INVIO):\n-w : su\n-a : sinistra\n-s : giù\n-d : destra\n");
   scanf("%s",&scelta);
   switch(scelta){
     case 'w':
-    su(&giocatore);
-    printf("Coordinate giocatore: (%d, %d)\n",giocatore.x,giocatore.y);
+    su(giocatore);
     break;
     case 'a':
-    sinistra(&giocatore);
-    printf("Coordinate giocatore: (%d, %d)\n",giocatore.x,giocatore.y);
+    sinistra(giocatore);
     break;
     case 's':
-    giu(&giocatore);
-    printf("Coordinate giocatore: (%d, %d)\n",giocatore.x,giocatore.y);
+    giu(giocatore);
     break;
     case 'd':
-    destra(&giocatore);
-    printf("Coordinate giocatore: (%d, %d)\n",giocatore.x,giocatore.y);
+    destra(giocatore);
     break;
     default:
     printf("Opzione non valida\n");
@@ -352,17 +351,17 @@ void usa_oggetto(struct Giocatore giocatore){
 
 }
 
-void turni(struct Giocatore giocatore){
+void turni(struct Giocatore* giocatore){
   unsigned scelta = 0;
-  printf("E' il turno di: %s\t Turno: %u\n", giocatore.nome, turno);
+  printf("E' il turno di: %s\t Turno: %u\n", giocatore->nome, turno);
   printf("\n\tMenu di gioco:\n1-Muoviti\n2-Usa oggetto\n");
   scanf("%u",&scelta);
   switch (scelta) {
     case 1:
-    muovi(giocatore);
+    muovi(&*giocatore);
     break;
     case 2:
-    usa_oggetto(giocatore);
+    usa_oggetto(*giocatore);
     break;
     default:
     printf("Opzione non valida");

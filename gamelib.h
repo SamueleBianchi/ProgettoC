@@ -47,11 +47,11 @@ const char *ritorna_pericolo(enum Tipo_pericolo pericolo);
 
 void legenda();
 
-void muovi(struct Giocatore giocatore);
+void muovi(struct Giocatore* giocatore);
 
 void usa_oggetto(struct Giocatore giocatore);
 
-void turni(struct Giocatore Giocatore);
+void turni(struct Giocatore* Giocatore);
 
 void su(struct Giocatore* giocatore);
 
