@@ -53,4 +53,12 @@ void usa_oggetto(struct Giocatore giocatore);
 
 void turni(struct Giocatore Giocatore);
 
+void su(struct Giocatore* giocatore);
+
+void giu(struct Giocatore* giocatore);
+
+void destra(struct Giocatore* giocatore);
+
+void sinistra(struct Giocatore* giocatore);
+
 void clear();

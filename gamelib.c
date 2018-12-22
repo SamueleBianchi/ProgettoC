@@ -288,9 +288,64 @@ void legenda(){
   printf("\n\tPericoli:\n-Ne : nessun pericolo\n-Tr : trappola\n-Al : alieno\n");
 }
 
+void su(struct Giocatore* giocatore){
+  if(giocatore->y == 0){
+    printf("Non puoi sportarti sopra: sei nel bordo della mappa!\n");
+  }else{
+    --giocatore->y;
+  }
+}
+
+void giu(struct Giocatore* giocatore){
+  if(giocatore->y == n-1){
+    printf("Non puoi sportarti sotto: sei nel bordo della mappa!\n");
+  }else{
+    ++giocatore->y;
+  }
+}
+
+void sinistra(struct Giocatore* giocatore){
+  if(giocatore->x == 0){
+    printf("Non puoi sportarti a sinistra: sei nel bordo della mappa!\n");
+  }else{
+    --giocatore->x;
+  }
+}
+
+void destra(struct Giocatore* giocatore){
+  if(giocatore->x == n-1){
+    printf("Non puoi sportarti a destra: sei nel bordo della mappa!\n");
+  }else{
+    ++giocatore->x;
+  }
+}
+
 void muovi(struct Giocatore giocatore){
-  unsigned scelta = 0;
-  
+  char scelta;
+  printf("\n\tComandi (premere il comando e il tasto INVIO):\n-w : su\n-a : sinistra\n-s : giù\n-d : destra\n");
+  scanf("%s",&scelta);
+  switch(scelta){
+    case 'w':
+    su(&giocatore);
+    printf("Coordinate giocatore: (%d, %d)\n",giocatore.x,giocatore.y);
+    break;
+    case 'a':
+    sinistra(&giocatore);
+    printf("Coordinate giocatore: (%d, %d)\n",giocatore.x,giocatore.y);
+    break;
+    case 's':
+    giu(&giocatore);
+    printf("Coordinate giocatore: (%d, %d)\n",giocatore.x,giocatore.y);
+    break;
+    case 'd':
+    destra(&giocatore);
+    printf("Coordinate giocatore: (%d, %d)\n",giocatore.x,giocatore.y);
+    break;
+    default:
+    printf("Opzione non valida\n");
+
+  }
+
 }
 
 void usa_oggetto(struct Giocatore giocatore){
@@ -300,7 +355,7 @@ void usa_oggetto(struct Giocatore giocatore){
 void turni(struct Giocatore giocatore){
   unsigned scelta = 0;
   printf("E' il turno di: %s\t Turno: %u\n", giocatore.nome, turno);
-  printf("\tMenu di gioco:\n1-Muoviti\n2-Usa oggetto\n");
+  printf("\n\tMenu di gioco:\n1-Muoviti\n2-Usa oggetto\n");
   scanf("%u",&scelta);
   switch (scelta) {
     case 1:
