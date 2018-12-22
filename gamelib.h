@@ -51,14 +51,14 @@ void muovi(struct Giocatore* giocatore);
 
 void usa_oggetto(struct Giocatore giocatore);
 
-void turni(struct Giocatore* Giocatore);
+void gioca_turno(struct Giocatore* Giocatore);
 
-void su(struct Giocatore* giocatore);
+unsigned su(struct Giocatore* giocatore);
 
-void giu(struct Giocatore* giocatore);
+unsigned giu(struct Giocatore* giocatore);
 
-void destra(struct Giocatore* giocatore);
+unsigned destra(struct Giocatore* giocatore);
 
-void sinistra(struct Giocatore* giocatore);
+unsigned sinistra(struct Giocatore* giocatore);
 
 void clear();

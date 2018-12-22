@@ -31,6 +31,7 @@ void crea_mappa(){
     termina_creazione();
     break;
     default:
+    clear();
     printf("Errore: opzione non valida (scegliere solo tra le 3 opzioni).\n");
     break;
   }
@@ -191,10 +192,10 @@ void gioca(){
     ++turno;
     if(turno%2){
       clear();
-      turni(&Ciccio);
+      gioca_turno(&Ciccio);
     }else{
       clear();
-      turni(&Ninja);
+      gioca_turno(&Ninja);
     }
 
   }while(1);
@@ -291,59 +292,75 @@ void legenda(){
   printf("\n\tPericoli:\n-Ne : nessun pericolo\n-Tr : trappola\n-Al : alieno\n");
 }
 
-void su(struct Giocatore* giocatore){
+unsigned su(struct Giocatore* giocatore){
   if(giocatore->y == 0){
+    clear();
     printf("Non puoi sportarti sopra: sei nel bordo della mappa!\n");
+    return 0;
   }else{
     --giocatore->y;
+    return 1;
   }
 }
 
-void giu(struct Giocatore* giocatore){
+unsigned giu(struct Giocatore* giocatore){
   if(giocatore->y == n-1){
+    clear();
     printf("Non puoi sportarti sotto: sei nel bordo della mappa!\n");
+    return 0;
   }else{
     ++giocatore->y;
+    return 1;
   }
 }
 
-void sinistra(struct Giocatore* giocatore){
+unsigned sinistra(struct Giocatore* giocatore){
   if(giocatore->x == 0){
+    clear();
     printf("Non puoi sportarti a sinistra: sei nel bordo della mappa!\n");
+    return 0;
   }else{
     --giocatore->x;
+    return 1;
   }
 }
 
-void destra(struct Giocatore* giocatore){
+unsigned destra(struct Giocatore* giocatore){
   if(giocatore->x == n-1){
+    clear();
     printf("Non puoi sportarti a destra: sei nel bordo della mappa!\n");
+    return 0;
   }else{
     ++giocatore->x;
+    return 1;
   }
 }
 
 void muovi(struct Giocatore* giocatore){
+  unsigned e = 0;
+  do{
   char scelta;
   printf("\n\tComandi (premere il comando e il tasto INVIO):\n-w : su\n-a : sinistra\n-s : giù\n-d : destra\n");
   scanf("%s",&scelta);
   switch(scelta){
     case 'w':
-    su(giocatore);
+    e = su(giocatore);
     break;
     case 'a':
-    sinistra(giocatore);
+    e = sinistra(giocatore);
     break;
     case 's':
-    giu(giocatore);
+    e = giu(giocatore);
     break;
     case 'd':
-    destra(giocatore);
+    e = destra(giocatore);
     break;
     default:
-    printf("Opzione non valida\n");
+    clear();
+    printf("Opzione non valida, riprova\n");
 
   }
+}while(e == 0);
 
 }
 
@@ -351,20 +368,27 @@ void usa_oggetto(struct Giocatore giocatore){
 
 }
 
-void turni(struct Giocatore* giocatore){
+void gioca_turno(struct Giocatore* giocatore){
   unsigned scelta = 0;
+  unsigned e = 0;
+  do{
+
   printf("E' il turno di: %s\t Turno: %u\n", giocatore->nome, turno);
   printf("\n\tMenu di gioco:\n1-Muoviti\n2-Usa oggetto\n");
   scanf("%u",&scelta);
   switch (scelta) {
     case 1:
     muovi(&*giocatore);
+    e=1;
     break;
     case 2:
     usa_oggetto(*giocatore);
+    e=1;
     break;
     default:
-    printf("Opzione non valida");
+    clear();
+    printf("Opzione non valida, riprova\n");
     break;
   }
+}while(e == 0);
 }
