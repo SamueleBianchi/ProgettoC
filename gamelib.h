@@ -63,4 +63,10 @@ unsigned sinistra(struct Giocatore* giocatore);
 
 int verifica_pericolo(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
 
+void combatti_alieno(struct Giocatore *giocatore1);
+
+void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
+
+void prendi_oggetto(struct Giocatore *giocatore1);
+
 void clear();

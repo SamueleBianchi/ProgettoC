@@ -59,6 +59,7 @@ void crea_scacchiera(){
     Ninja.x = rand() % n;
     Ninja.y = rand() % n;
     Ninja.stato = solo_vita;
+    inizializza_zaini(&Ciccio,&Ninja);
     printf("Ciccio inizializzato alle coordinate (%d,%d) stato: %s\n", Ciccio.x, Ciccio.y,ritorna_stato(Ciccio.stato));
     printf("Ninja inizializzato alle coordinate (%d,%d) stato: %s\n", Ninja.x, Ninja.y, ritorna_stato(Ninja.stato));
   }
@@ -404,10 +405,87 @@ void gioca_turno(struct Giocatore* giocatore){
 }
 
 int verifica_pericolo(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
-  if(scacchiera[giocatore1->x*n + giocatore1->y].pericolo == 1){
+  switch(scacchiera[giocatore1->x*n + giocatore1->y].pericolo){
+    case 1:
     printf("%s è stato ucciso da una trappola!\n%s vince la partita!\n",giocatore1->nome,giocatore2->nome);
     return 0;
-  }else{
+    break;
+    case 2:
+    combatti_alieno(&*giocatore1);
+    default:
     return 1;
+    break;
+  }
+}
+
+void combatti_alieno(struct Giocatore *giocatore1){
+  unsigned scelta = 0;
+  unsigned e = 0;
+  printf("C'è un alieno! Vuoi combatterlo? Se non lo combatti non prendi l'eventuale oggetto\n-1 Si\n-2 No\n");
+  do{
+    scanf("%d",&scelta);
+    switch(scelta){
+      case 1:
+      ++giocatore1->alieni_uccisi;
+      scacchiera[giocatore1->x * n + giocatore1->y].pericolo = 0;
+      printf("Alieni uccisi: %zu\nPericolo scacchiera:%d\n",giocatore1->alieni_uccisi,  scacchiera[giocatore1->x * n + giocatore1->y].pericolo);
+      prendi_oggetto(&*giocatore1);
+      e = 1;
+      break;
+      case 2:
+      e = 1;
+      break;
+      default:
+      clear();
+      printf("Errore: risposta non corretta, riprova\nVuoi combattere?\n-1 Si\n-2 No\n");
+      break;
+    }
+
+  }while(e == 0);
+}
+
+void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
+  for(int i = 0; i<4; i++){
+    giocatore1->zaino[i]=0;
+    giocatore2->zaino[i]=0;
+  }
+}
+
+void prendi_oggetto(struct Giocatore *giocatore1){
+  //Da Fixare
+  unsigned oggetto = scacchiera[giocatore1->x * n + giocatore1->y].oggetto;
+  switch(oggetto){
+    case 1:
+    if(giocatore1->zaino[0]<3){
+    ++giocatore1->zaino[0];
+    printf("Hai ottenuto 1 %s\n",ritorna_oggetto(oggetto));
+  }else{
+    printf("Impossibile prendere l'oggetto %s: hai raggiunto il numero massimo di oggetti da prendere di questo tipo\n",ritorna_oggetto(oggetto));
+  }
+    break;
+    case 2:
+    if(giocatore1->zaino[1]<3){
+      printf("Hai ottenuto 1 %s\n",ritorna_oggetto(oggetto));
+      ++giocatore1->zaino[1];
+    }else{
+      printf("Impossibile prendere l'oggetto %s: hai raggiunto il numero massimo di oggetti da prendere di questo tipo\n",ritorna_oggetto(oggetto));
+    }
+    break;
+    case 3:
+    if(giocatore1->zaino[2]<3){
+      printf("Hai ottenuto 1 %s\n",ritorna_oggetto(oggetto));
+      ++giocatore1->zaino[2];
+    }else{
+      printf("Impossibile prendere l'oggetto %s: hai raggiunto il numero massimo di oggetti da prendere di questo tipo\n",ritorna_oggetto(oggetto));
+    }
+    break;
+    case 4:
+    if(giocatore1->zaino[3]<3){
+      printf("Hai ottenuto 1 %s\n",ritorna_oggetto(oggetto));
+      ++giocatore1->zaino[3];
+    }else{
+      printf("Impossibile prendere l'oggetto %s: hai raggiunto il numero massimo di oggetti da prendere di questo tipo\n",ritorna_oggetto(oggetto));
+    }
+    break;
   }
 }
