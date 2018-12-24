@@ -9,6 +9,7 @@ static struct Giocatore Ninja;
 static struct Giocatore Ciccio;
 static unsigned int n = 0;
 static unsigned int turno = 0;
+static unsigned int numero_giochi = 0;
 
 void crea_mappa(){
 
@@ -183,9 +184,12 @@ void termina_creazione(){
 }
 
 void gioca(){
+  int uscita = 1;
   if(scacchiera == NULL){
     printf("Non puoi giocare se non crei la scacchiera!\n");
   }else{
+    ++numero_giochi;
+    if(numero_giochi == 1){
     strcpy(Ciccio.nome , "Ciccio");
     strcpy(Ninja.nome , "Ninja");
     do{
@@ -193,13 +197,19 @@ void gioca(){
     if(turno%2){
       clear();
       gioca_turno(&Ciccio);
+      uscita = verifica_pericolo(&Ciccio,&Ninja);
     }else{
       clear();
       gioca_turno(&Ninja);
+      uscita = verifica_pericolo(&Ninja,&Ciccio);
     }
 
-  }while(1);
-  }
+  }while(uscita);
+}else{
+  clear();
+  printf("\nNon puoi rigiocare! Per creare una nuova partita devi terminare questa.");
+}
+}
 }
 
 void termina_gioco(){
@@ -391,4 +401,13 @@ void gioca_turno(struct Giocatore* giocatore){
     break;
   }
 }while(e == 0);
+}
+
+int verifica_pericolo(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
+  if(scacchiera[giocatore1->x*n + giocatore1->y].pericolo == 1){
+    printf("%s è stato ucciso da una trappola!\n%s vince la partita!\n",giocatore1->nome,giocatore2->nome);
+    return 0;
+  }else{
+    return 1;
+  }
 }
