@@ -53,8 +53,8 @@ void crea_scacchiera(){
     srand((unsigned) time(&t));
     randomizza_pericoli(n,scacchiera);
     randomizza_oggetti(n,scacchiera);
-    Ciccio.x = rand() % n;
-    Ciccio.y = rand() % n;
+    Ciccio.x = 4;
+    Ciccio.y = 0;
     Ciccio.stato = solo_vita;
     Ninja.x = rand() % n;
     Ninja.y = rand() % n;
@@ -197,12 +197,12 @@ void gioca(){
     ++turno;
     if(turno%2){
       clear();
-      gioca_turno(&Ciccio);
-      uscita = verifica_pericolo(&Ciccio,&Ninja);
+      uscita = gioca_turno(&Ciccio,&Ninja);
+      //uscita = verifica_pericolo(&Ciccio,&Ninja);
     }else{
       clear();
-      gioca_turno(&Ninja);
-      uscita = verifica_pericolo(&Ninja,&Ciccio);
+      uscita = gioca_turno(&Ninja,&Ciccio);
+      //uscita = verifica_pericolo(&Ninja,&Ciccio);
     }
 
   }while(uscita);
@@ -275,6 +275,7 @@ const char *ritorna_oggetto(enum Tipo_oggetto oggetto){
     break;
     case 4:
     return "Cl";
+    break;
     default:
     return "ERR";
   }
@@ -304,31 +305,9 @@ void legenda(){
 }
 
 unsigned su(struct Giocatore* giocatore){
-  if(giocatore->y == 0){
-    clear();
-    printf("Non puoi sportarti sopra: sei nel bordo della mappa!\n");
-    return 0;
-  }else{
-    --giocatore->y;
-    return 1;
-  }
-}
-
-unsigned giu(struct Giocatore* giocatore){
-  if(giocatore->y == n-1){
-    clear();
-    printf("Non puoi sportarti sotto: sei nel bordo della mappa!\n");
-    return 0;
-  }else{
-    ++giocatore->y;
-    return 1;
-  }
-}
-
-unsigned sinistra(struct Giocatore* giocatore){
   if(giocatore->x == 0){
     clear();
-    printf("Non puoi sportarti a sinistra: sei nel bordo della mappa!\n");
+    printf("Non puoi sportarti sopra: sei nel bordo della mappa!\n");
     return 0;
   }else{
     --giocatore->x;
@@ -336,13 +315,35 @@ unsigned sinistra(struct Giocatore* giocatore){
   }
 }
 
-unsigned destra(struct Giocatore* giocatore){
+unsigned giu(struct Giocatore* giocatore){
   if(giocatore->x == n-1){
+    clear();
+    printf("Non puoi sportarti sotto: sei nel bordo della mappa!\n");
+    return 0;
+  }else{
+    ++giocatore->x;
+    return 1;
+  }
+}
+
+unsigned sinistra(struct Giocatore* giocatore){
+  if(giocatore->y == 0){
+    clear();
+    printf("Non puoi sportarti a sinistra: sei nel bordo della mappa!\n");
+    return 0;
+  }else{
+    --giocatore->y;
+    return 1;
+  }
+}
+
+unsigned destra(struct Giocatore* giocatore){
+  if(giocatore->y == n-1){
     clear();
     printf("Non puoi sportarti a destra: sei nel bordo della mappa!\n");
     return 0;
   }else{
-    ++giocatore->x;
+    ++giocatore->y;
     return 1;
   }
 }
@@ -379,22 +380,25 @@ void usa_oggetto(struct Giocatore giocatore){
 
 }
 
-void gioca_turno(struct Giocatore* giocatore){
+int gioca_turno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
   unsigned scelta = 0;
   unsigned e = 0;
+  int ritorna = 0;
   do{
 
-  printf("E' il turno di: %s\t Turno: %u\n", giocatore->nome, turno);
+  printf("E' il turno di: %s\t Turno: %u\n", giocatore1->nome, turno);
   printf("\n\tMenu di gioco:\n1-Muoviti\n2-Usa oggetto\n");
   scanf("%u",&scelta);
   switch (scelta) {
     case 1:
-    muovi(&*giocatore);
+    muovi(&*giocatore1);
     e=1;
+    ritorna = verifica_pericolo(&*giocatore1,&*giocatore2);
     break;
     case 2:
-    usa_oggetto(*giocatore);
+    usa_oggetto(*giocatore1);
     e=1;
+    ritorna = 1;
     break;
     default:
     clear();
@@ -402,6 +406,7 @@ void gioca_turno(struct Giocatore* giocatore){
     break;
   }
 }while(e == 0);
+return ritorna;
 }
 
 int verifica_pericolo(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
@@ -452,7 +457,8 @@ void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore
 }
 
 void prendi_oggetto(struct Giocatore *giocatore1){
-  //Da Fixare
+  stampa_scacchiera();
+  printf("Ciccio inizializzato alle coordinate (%d,%d) pericolo:%s\n", giocatore1->x, giocatore1->y, ritorna_oggetto(scacchiera[giocatore1->x * n + giocatore1->y].oggetto));
   unsigned oggetto = scacchiera[giocatore1->x * n + giocatore1->y].oggetto;
   switch(oggetto){
     case 1:

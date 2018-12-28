@@ -51,7 +51,7 @@ void muovi(struct Giocatore* giocatore);
 
 void usa_oggetto(struct Giocatore giocatore);
 
-void gioca_turno(struct Giocatore* Giocatore);
+int gioca_turno(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
 
 unsigned su(struct Giocatore* giocatore);
 
