@@ -53,8 +53,8 @@ void crea_scacchiera(){
     srand((unsigned) time(&t));
     randomizza_pericoli(n,scacchiera);
     randomizza_oggetti(n,scacchiera);
-    Ciccio.x = 4;
-    Ciccio.y = 0;
+    Ciccio.x = rand() % n;
+    Ciccio.y = rand() % n;
     Ciccio.stato = solo_vita;
     Ninja.x = rand() % n;
     Ninja.y = rand() % n;
@@ -383,6 +383,7 @@ void usa_oggetto(struct Giocatore giocatore){
 int gioca_turno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
   unsigned scelta = 0;
   unsigned e = 0;
+  char continua;
   int ritorna = 0;
   do{
 
@@ -394,6 +395,10 @@ int gioca_turno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
     muovi(&*giocatore1);
     e=1;
     ritorna = verifica_pericolo(&*giocatore1,&*giocatore2);
+    if (ritorna!=0){
+    printf("Premi un carattere qualsiasi per passare il tuo turno \n");
+    scanf("%s",&continua);
+    }
     break;
     case 2:
     usa_oggetto(*giocatore1);
@@ -416,16 +421,19 @@ int verifica_pericolo(struct Giocatore *giocatore1, struct Giocatore *giocatore2
     return 0;
     break;
     case 2:
-    combatti_alieno(&*giocatore1);
+    return combatti_alieno(&*giocatore1, &*giocatore2);
     default:
     return 1;
     break;
   }
 }
 
-void combatti_alieno(struct Giocatore *giocatore1){
+int combatti_alieno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
   unsigned scelta = 0;
   unsigned e = 0;
+  unsigned scudo = 65;
+  unsigned random = 0;
+  unsigned r = 1;
   printf("C'è un alieno! Vuoi combatterlo? Se non lo combatti non prendi l'eventuale oggetto\n-1 Si\n-2 No\n");
   do{
     scanf("%d",&scelta);
@@ -435,6 +443,21 @@ void combatti_alieno(struct Giocatore *giocatore1){
       scacchiera[giocatore1->x * n + giocatore1->y].pericolo = 0;
       printf("Alieni uccisi: %zu\nPericolo scacchiera:%d\n",giocatore1->alieni_uccisi,  scacchiera[giocatore1->x * n + giocatore1->y].pericolo);
       prendi_oggetto(&*giocatore1);
+      random = rand() % 101;
+      if(giocatore1->stato == vulnerabile){
+        r = 0;
+        printf("%s è stato ucciso da una trappola!\n%s vince la partita!\n",giocatore1->nome,giocatore2->nome);
+      }else{
+      if(random < scudo){
+        if(giocatore1->stato == solo_vita){
+          giocatore1->stato = vulnerabile;
+        }
+      }else{
+          if(giocatore1->stato == solo_scudo){
+            giocatore1->stato = vulnerabile;
+          }
+      }}
+      printf("Numero random = %u\nStato giocatore: %d ", random, giocatore1->stato);
       e = 1;
       break;
       case 2:
@@ -447,6 +470,7 @@ void combatti_alieno(struct Giocatore *giocatore1){
     }
 
   }while(e == 0);
+  return r;
 }
 
 void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
@@ -457,7 +481,6 @@ void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore
 }
 
 void prendi_oggetto(struct Giocatore *giocatore1){
-  stampa_scacchiera();
   printf("Ciccio inizializzato alle coordinate (%d,%d) pericolo:%s\n", giocatore1->x, giocatore1->y, ritorna_oggetto(scacchiera[giocatore1->x * n + giocatore1->y].oggetto));
   unsigned oggetto = scacchiera[giocatore1->x * n + giocatore1->y].oggetto;
   switch(oggetto){
