@@ -376,8 +376,90 @@ void muovi(struct Giocatore* giocatore){
 
 }
 
-void usa_oggetto(struct Giocatore giocatore){
+int usa_oggetto(struct Giocatore *giocatore){
+  unsigned scelta = 0;
+  unsigned e = 0;
+  char continua;
+  if(zaino_pieno(&*giocatore)==0){
+  do{
+  printf("\nIl tuo zaino: \n");
+  for(int i=0; i<4; ++i){
+    printf("%d %s\n", giocatore->zaino[i], ritorna_oggetto(i+1));
+  }
+  printf("Vita attuale: %s\n",ritorna_stato(giocatore->stato));
+  printf("Cosa vuoi usare?\n1-Medikit\n2-Pozione\n3-Materiale\n4-Colpi lanciarazzi\n\n");
 
+  scanf("%u",&scelta);
+  switch(scelta){
+    case 1:
+    if(giocatore->zaino[0] != 0){
+      if(giocatore->stato == vulnerabile){
+        giocatore->stato = solo_vita;
+        --giocatore->zaino[0];
+        printf("Medikit utilizzato! Vita: %s\n",ritorna_stato(giocatore->stato));
+        e = 1;
+      }else{
+        if(giocatore->stato == solo_scudo){
+          giocatore->stato = scudo_vita;
+          --giocatore->zaino[0];
+          printf("Medikit utilizzato! Vita: %s\n",ritorna_stato(giocatore->stato));
+          e = 1;
+        }else{
+          if(giocatore->stato == solo_vita || giocatore->stato == scudo_vita){
+            clear();
+            printf("\nNon puoi usare questo oggetto! Hai già ripristinato la tua vita. Usa un altro oggetto\n");
+          }
+        }
+      }
+
+    }else{
+      printf("Non puoi usare quest'oggetto : non è nel tuo zaino!\n");
+    }
+    break;
+    case 2:
+    if(giocatore->zaino[1] != 0){
+      if(giocatore->stato == vulnerabile){
+        giocatore->stato = solo_scudo;
+        --giocatore->zaino[1];
+        printf("Pozione utilizzata! Vita: %s\n",ritorna_stato(giocatore->stato));
+        e = 1;
+      }else{
+        if(giocatore->stato == solo_vita){
+          giocatore->stato = scudo_vita;
+          --giocatore->zaino[1];
+          printf("Pozione utilizzata! Vita: %s\n",ritorna_stato(giocatore->stato));
+          e = 1;
+        }else{
+          if(giocatore->stato == solo_scudo || giocatore->stato == scudo_vita){
+            clear();
+            printf("\nNon puoi usare questo oggetto! Hai già ripristinato il tuo scudo. Usa un altro oggetto\n");
+          }
+        }
+      }
+
+    }else{
+      printf("Non puoi usare quest'oggetto : non è nel tuo zaino!\n");
+    }
+    break;
+    case 3:
+    break;
+    case 4:
+    break;
+    default:
+    clear();
+    printf("Errore, scegliere solo tra le opzioni proposte, riprovare\n");
+    e = 0;
+    break;
+  }
+}while(e == 0);
+printf("Premi un carattere e premi invio per passare il turno... ");
+scanf("%s",&continua);
+return 1;
+}else{
+  clear();
+  printf("Il tuo zaino è vuoto! Non puoi usare nessun oggetto\n");
+  return 0;
+}
 }
 
 int gioca_turno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
@@ -401,8 +483,7 @@ int gioca_turno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
     }
     break;
     case 2:
-    usa_oggetto(*giocatore1);
-    e=1;
+    e = usa_oggetto(&*giocatore1);
     ritorna = 1;
     break;
     default:
@@ -446,7 +527,7 @@ int combatti_alieno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
       random = rand() % 101;
       if(giocatore1->stato == vulnerabile){
         r = 0;
-        printf("%s è stato ucciso da una trappola!\n%s vince la partita!\n",giocatore1->nome,giocatore2->nome);
+        printf("%s è stato ucciso durante lo scontro con l'alieno!\n%s vince la partita!\n",giocatore1->nome,giocatore2->nome);
       }else{
       if(random < scudo){
         if(giocatore1->stato == solo_vita){
@@ -516,5 +597,13 @@ void prendi_oggetto(struct Giocatore *giocatore1){
       printf("Impossibile prendere l'oggetto %s: hai raggiunto il numero massimo di oggetti da prendere di questo tipo\n",ritorna_oggetto(oggetto));
     }
     break;
+  }
+}
+
+int zaino_pieno(struct Giocatore *giocatore){
+  if(giocatore->zaino[0] == 0 && giocatore->zaino[1]== 0 && giocatore->zaino[2]== 0 && giocatore->zaino[3]==0){
+    return 1;
+  }else{
+    return 0;
   }
 }

@@ -49,7 +49,7 @@ void legenda();
 
 void muovi(struct Giocatore* giocatore);
 
-void usa_oggetto(struct Giocatore giocatore);
+int usa_oggetto(struct Giocatore *giocatore);
 
 int gioca_turno(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
 
@@ -68,5 +68,7 @@ int combatti_alieno(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
 void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
 
 void prendi_oggetto(struct Giocatore *giocatore1);
+
+int zaino_pieno(struct Giocatore *giocatore);
 
 void clear();
