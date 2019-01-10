@@ -13,6 +13,7 @@ static unsigned int numero_giochi = 0;
 unsigned short probPericoli[3];
 unsigned short probOggetti[5];
 
+// La funzione contiene il codice che deve essere eseguito runtime e deve essere scritto all'interno di una funzione
 void init(){
   time_t t;
   srand((unsigned) time(&t));
@@ -246,6 +247,8 @@ void dimezza_mappa(){
   n = n/2;
   scacchiera = (struct Cella*) malloc(n*n*sizeof(struct Cella));
   inizializza_giocatori();
+  randomizza_oggetti();
+  randomizza_pericoli();
 }
 
 int verifica(){
