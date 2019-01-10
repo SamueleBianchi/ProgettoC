@@ -44,24 +44,14 @@ void crea_scacchiera(){
   clear();
   printf("Inserisci la dimensione della mappa: ");
   scanf("%u",&n);
-  printf("Creazione della mappa in corso\n");
   scacchiera = (struct Cella*) malloc(n*n*sizeof(struct Cella));
-  if(scacchiera == NULL){
-    printf("Impossibile creare la scacchiera.\n");
-  }else{
-    time_t t;
-    srand((unsigned) time(&t));
-    randomizza_pericoli(n,scacchiera);
-    randomizza_oggetti(n,scacchiera);
-    Ciccio.x = rand() % n;
-    Ciccio.y = rand() % n;
-    Ciccio.stato = solo_vita;
-    Ninja.x = rand() % n;
-    Ninja.y = rand() % n;
-    Ninja.stato = solo_vita;
-    inizializza_zaini(&Ciccio,&Ninja);
-    printf("Ciccio inizializzato alle coordinate (%d,%d) stato: %s\n", Ciccio.x, Ciccio.y,ritorna_stato(Ciccio.stato));
-    printf("Ninja inizializzato alle coordinate (%d,%d) stato: %s\n", Ninja.x, Ninja.y, ritorna_stato(Ninja.stato));
+    if(scacchiera == NULL){
+      printf("Impossibile creare la scacchiera.\n");
+    }else{
+      randomizza_pericoli(n,scacchiera);
+      randomizza_oggetti(n,scacchiera);
+      inizializza_giocatori();
+      inizializza_zaini(&Ciccio,&Ninja);
   }
 }else{
   clear();
@@ -69,9 +59,21 @@ void crea_scacchiera(){
 }
 }
 
+void inizializza_giocatori(){
+  time_t t;
+  srand((unsigned) time(&t));
+  Ciccio.x = rand() % n;
+  Ciccio.y = rand() % n;
+  Ciccio.stato = solo_vita;
+  Ninja.x = rand() % n;
+  Ninja.y = rand() % n;
+  Ninja.stato = solo_vita;
+  printf("Ciccio inizializzato alle coordinate (%d,%d) stato: %s\n", Ciccio.x, Ciccio.y,ritorna_stato(Ciccio.stato));
+  printf("Ninja inizializzato alle coordinate (%d,%d) stato: %s\n", Ninja.x, Ninja.y, ritorna_stato(Ninja.stato));
+}
+
 void randomizza_pericoli(unsigned int n,struct Cella *scacchiera){
-  int prob[3];
-  int somma = 0;
+  int prob[3],somma = 0;
 
   while(somma<=100){
     printf("Inserisci la probabilità che non ci sia alcun pericolo: ");
@@ -91,7 +93,6 @@ void randomizza_pericoli(unsigned int n,struct Cella *scacchiera){
       break;
     }
   }
-
   int random = 0;
   for(int i=0; i<n;i++){
     for(int j=0; j<n;j++){
@@ -111,7 +112,7 @@ void randomizza_pericoli(unsigned int n,struct Cella *scacchiera){
 
 void randomizza_oggetti(unsigned int n,struct Cella *scacchiera){
   int prob[5];
-  int somma=0;
+  int somma = 0;
 
   while(somma<=100){
     printf("\nInserisci la probabilità che non ci sia alcun oggetto: ");
@@ -168,7 +169,6 @@ void stampa_scacchiera(){
     printf("Impossibile stampare la scacchiera: la scacchiera non è stata creata.\n");
   }else{
     printf("\n");
-
     for(int i=0; i<n; ++i){
       for(int j=0; j<n; ++j){
         printf("| %s-%s |",ritorna_oggetto(scacchiera[i*n+j].oggetto), ritorna_pericolo(scacchiera[i*n+j].pericolo));
@@ -370,17 +370,19 @@ void muovi(struct Giocatore* giocatore){
     default:
     clear();
     printf("Opzione non valida, riprova\n");
-
   }
 }while(e == 0);
-
 }
 
+/* La funzione permette di usare gli oggetti e ritorna 0 se lo zaino è vuoto(quindi non è possibile utilizzare alcun oggetto),
+1 negli altri casi, in cui l'operazione è andata a buon fine. */
 int usa_oggetto(struct Giocatore *giocatore){
   unsigned scelta = 0;
+  /* Variabile "e" utilizzata per ciclare nel ciclo while fino a che l'utente non usa un oggetto nella maniera corretta
+  (es: usa il medikit quando è vulnerabile e non in stato solo_vita ). */
   unsigned e = 0;
   char continua;
-  if(zaino_pieno(&*giocatore)==0){
+  if(zaino_pieno(&*giocatore) == 0){
   do{
   printf("\nIl tuo zaino: \n");
   for(int i=0; i<4; ++i){
@@ -388,7 +390,6 @@ int usa_oggetto(struct Giocatore *giocatore){
   }
   printf("Vita attuale: %s\n",ritorna_stato(giocatore->stato));
   printf("Cosa vuoi usare?\n1-Medikit\n2-Pozione\n3-Materiale\n4-Colpi lanciarazzi\n\n");
-
   scanf("%u",&scelta);
   switch(scelta){
     case 1:
@@ -411,7 +412,6 @@ int usa_oggetto(struct Giocatore *giocatore){
           }
         }
       }
-
     }else{
       printf("Non puoi usare quest'oggetto : non è nel tuo zaino!\n");
     }
@@ -436,7 +436,6 @@ int usa_oggetto(struct Giocatore *giocatore){
           }
         }
       }
-
     }else{
       printf("Non puoi usare quest'oggetto : non è nel tuo zaino!\n");
     }
@@ -462,9 +461,12 @@ return 1;
 }
 }
 
+/* La funzione permette di giocare il turno e ritorna 1 se il giocatore che ha giocato il turno non è morto,
+altrimenti restituisce 0 (giocatore morto) */
+
 int gioca_turno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
   unsigned scelta = 0;
-  unsigned e = 0;
+  unsigned e = 0;//variabile per uscire dal ciclo do-while
   char continua;
   int ritorna = 0;
   do{
@@ -495,26 +497,28 @@ int gioca_turno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
 return ritorna;
 }
 
-int verifica_pericolo(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
+/* La funzione verifica_pericolo ritorna 0 se il giocatore viene ucciso da una trappola (caso in cui il campo pericolo è
+uguale a 0), ritorna 1 per default,  e ritorna il valore restituito dalla funzione combatti_alieno() se il valore del pericolo
+nella cella è 2, se la funzione combatti_alieno() restituisce 0 significa che il giocatore è morto nel combattimento. */
+
+int verifica_pericolola funzione richiede(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
   switch(scacchiera[giocatore1->x*n + giocatore1->y].pericolo){
     case 1:
     printf("%s è stato ucciso da una trappola!\n%s vince la partita!\n",giocatore1->nome,giocatore2->nome);
     return 0;
-    break;
     case 2:
     return combatti_alieno(&*giocatore1, &*giocatore2);
     default:
     return 1;
-    break;
   }
 }
 
+/* La funzione combatti_alieno restituisce 0 se il giocatore muore durante il combattimento con l'alieno, restituisce 1 se
+il giocatore non muore, infatti la variabile r (variabile ritornata) viene inizializzata a 1. */
+
 int combatti_alieno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
-  unsigned scelta = 0;
-  unsigned e = 0;
-  unsigned scudo = 65;
-  unsigned random = 0;
-  unsigned r = 1;
+  unsigned scelta = 0, e = 0,scudo = 65,random = 0;
+  unsigned r = 1;//variabile di ritorno
   printf("C'è un alieno! Vuoi combatterlo? Se non lo combatti non prendi l'eventuale oggetto\n-1 Si\n-2 No\n");
   do{
     scanf("%d",&scelta);
@@ -560,6 +564,9 @@ void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore
     giocatore2->zaino[i]=0;
   }
 }
+
+/* La funzione permette di prendere gli oggetti che il giocatore trova quando si sposta nella mappa e avvisa il giocatore
+ che non può prendere un determinato oggetto perche possiede il numero massimo di oggetti di quel determinato tipo. */
 
 void prendi_oggetto(struct Giocatore *giocatore1){
   printf("Ciccio inizializzato alle coordinate (%d,%d) pericolo:%s\n", giocatore1->x, giocatore1->y, ritorna_oggetto(scacchiera[giocatore1->x * n + giocatore1->y].oggetto));

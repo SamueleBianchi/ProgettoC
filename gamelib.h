@@ -35,6 +35,8 @@ void stampa_scacchiera();
 
 void termina_creazione();
 
+void inizializza_giocatori();
+
 void randomizza_pericoli(unsigned int n,struct Cella *scacchiera);
 
 void randomizza_oggetti(unsigned int n,struct Cella *scacchiera);
