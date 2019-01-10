@@ -10,9 +10,15 @@ static struct Giocatore Ciccio;
 static unsigned int n = 0;
 static unsigned int turno = 0;
 static unsigned int numero_giochi = 0;
+unsigned short probPericoli[3];
+unsigned short probOggetti[5];
+
+void init(){
+  time_t t;
+  srand((unsigned) time(&t));
+}
 
 void crea_mappa(){
-
   clear();
   int scelta;
   do{
@@ -48,8 +54,10 @@ void crea_scacchiera(){
     if(scacchiera == NULL){
       printf("Impossibile creare la scacchiera.\n");
     }else{
-      randomizza_pericoli(n,scacchiera);
-      randomizza_oggetti(n,scacchiera);
+      inizializza_pericoli(n,scacchiera);
+      inizializza_oggetti(n,scacchiera);
+      Ninja.stato = solo_vita;
+      Ciccio.stato = solo_vita;
       inizializza_giocatori();
       inizializza_zaini(&Ciccio,&Ninja);
   }
@@ -60,31 +68,26 @@ void crea_scacchiera(){
 }
 
 void inizializza_giocatori(){
-  time_t t;
-  srand((unsigned) time(&t));
   Ciccio.x = rand() % n;
   Ciccio.y = rand() % n;
-  Ciccio.stato = solo_vita;
   Ninja.x = rand() % n;
   Ninja.y = rand() % n;
-  Ninja.stato = solo_vita;
   printf("Ciccio inizializzato alle coordinate (%d,%d) stato: %s\n", Ciccio.x, Ciccio.y,ritorna_stato(Ciccio.stato));
   printf("Ninja inizializzato alle coordinate (%d,%d) stato: %s\n", Ninja.x, Ninja.y, ritorna_stato(Ninja.stato));
 }
 
-void randomizza_pericoli(unsigned int n,struct Cella *scacchiera){
-  int prob[3],somma = 0;
-
+void inizializza_pericoli(unsigned int n,struct Cella *scacchiera){
+  int somma = 0;
   while(somma<=100){
     printf("Inserisci la probabilità che non ci sia alcun pericolo: ");
-    prob[0] = verifica();
-    somma += prob[0];
+    probPericoli[0] = verifica();
+    somma += probPericoli[0];
     printf("Inserisci la probabilità ci sia una trappola: ");
-    prob[1]= verifica();
-    somma += prob[1];
+    probPericoli[1]= verifica();
+    somma += probPericoli[1];
     printf("Inserisci la probabilità ci sia un alieno: ");
-    prob[2] = verifica();
-    somma+=prob[2];
+    probPericoli[2] = verifica();
+    somma += probPericoli[2];
     if(somma>100 || somma <100){
       printf("Errore: la somma delle probabilità deve essere 100, riprovare\n");
       somma = 0;
@@ -93,14 +96,18 @@ void randomizza_pericoli(unsigned int n,struct Cella *scacchiera){
       break;
     }
   }
+  randomizza_pericoli();
+}
+
+void randomizza_pericoli(){
   int random = 0;
   for(int i=0; i<n;i++){
     for(int j=0; j<n;j++){
       random = rand() % 101;
-      if(random <= prob[0]){
+      if(random <= probPericoli[0]){
         scacchiera[i*n+j].pericolo = 0;
       }else{
-        if(random <= prob[0]+prob[1]){
+        if(random <= probPericoli[0]+probPericoli[1]){
           scacchiera[i*n+j].pericolo = 1;
         }else{
           scacchiera[i*n+j].pericolo = 2;
@@ -110,26 +117,25 @@ void randomizza_pericoli(unsigned int n,struct Cella *scacchiera){
     }
 }
 
-void randomizza_oggetti(unsigned int n,struct Cella *scacchiera){
-  int prob[5];
+void inizializza_oggetti(unsigned int n,struct Cella *scacchiera){
   int somma = 0;
 
   while(somma<=100){
     printf("\nInserisci la probabilità che non ci sia alcun oggetto: ");
-    prob[0]= verifica();
-    somma+=prob[0];
+    probOggetti[0]= verifica();
+    somma+=probOggetti[0];
     printf("Inserisci la probabilità che ci sia un medikit: ");
-    prob[1]= verifica();
-    somma+=prob[1];
+    probOggetti[1]= verifica();
+    somma+=probOggetti[1];
     printf("Inserisci la probabilità ci sia una pozione: ");
-    prob[2]= verifica();
-    somma+=prob[2];
+    probOggetti[2]= verifica();
+    somma+=probOggetti[2];
     printf("Inserisci la probabilità ci sia un materiale: ");
-    prob[3]= verifica();
-    somma+=prob[3];
+    probOggetti[3]= verifica();
+    somma+=probOggetti[3];
     printf("Inserisci la probabilità ci siano colpi lanciarazzi: ");
-    prob[4]= verifica();
-    somma+=prob[4];
+    probOggetti[4]= verifica();
+    somma+=probOggetti[4];
     if(somma>100 || somma <100){
       printf("Errore: la somma delle probabilità deve essere 100, riprovare\n");
       somma=0;
@@ -138,20 +144,24 @@ void randomizza_oggetti(unsigned int n,struct Cella *scacchiera){
       break;
     }
   }
+ randomizza_oggetti();
+}
+
+void randomizza_oggetti(){
   int random = 0;
   for(int i=0; i<n;i++){
     for(int j=0; j<n;j++){
       random = rand() % 101;
-      if(random <= prob[0]){
+      if(random <= probOggetti[0]){
         scacchiera[i*n+j].oggetto = 0;
       }else{
-        if(random <= prob[0]+prob[1]){
+        if(random <= probOggetti[0]+probOggetti[1]){
           scacchiera[i*n+j].oggetto = 1;
         }else{
-          if(random <= prob[0]+prob[1]+prob[2]){
+          if(random <= probOggetti[0]+probOggetti[1]+probOggetti[2]){
             scacchiera[i*n+j].oggetto = 2;
           }else{
-            if(random <= prob[0]+prob[1]+prob[2]+prob[3]){
+            if(random <= probOggetti[0]+probOggetti[1]+probOggetti[2]+probOggetti[3]){
               scacchiera[i*n+j].oggetto = 3;
             }else{
               scacchiera[i*n+j].oggetto = 4;
@@ -195,6 +205,9 @@ void gioca(){
     strcpy(Ninja.nome , "Ninja");
     do{
     ++turno;
+    if(turno%5 == 0){
+      dimezza_mappa();
+    }
     if(turno%2){
       clear();
       uscita = gioca_turno(&Ciccio,&Ninja);
@@ -226,6 +239,13 @@ void clear(){
     #if defined(_WIN32) || defined(_WIN64)
         system("cls");
     #endif
+}
+
+void dimezza_mappa(){
+  free(scacchiera);
+  n = n/2;
+  scacchiera = (struct Cella*) malloc(n*n*sizeof(struct Cella));
+  inizializza_giocatori();
 }
 
 int verifica(){
@@ -501,7 +521,7 @@ return ritorna;
 uguale a 0), ritorna 1 per default,  e ritorna il valore restituito dalla funzione combatti_alieno() se il valore del pericolo
 nella cella è 2, se la funzione combatti_alieno() restituisce 0 significa che il giocatore è morto nel combattimento. */
 
-int verifica_pericolola funzione richiede(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
+int verifica_pericolo(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
   switch(scacchiera[giocatore1->x*n + giocatore1->y].pericolo){
     case 1:
     printf("%s è stato ucciso da una trappola!\n%s vince la partita!\n",giocatore1->nome,giocatore2->nome);

@@ -37,9 +37,13 @@ void termina_creazione();
 
 void inizializza_giocatori();
 
-void randomizza_pericoli(unsigned int n,struct Cella *scacchiera);
+void inizializza_pericoli(unsigned int n,struct Cella *scacchiera);
 
-void randomizza_oggetti(unsigned int n,struct Cella *scacchiera);
+void inizializza_oggetti(unsigned int n,struct Cella *scacchiera);
+
+void randomizza_pericoli();
+
+void randomizza_oggetti();
 
 const char *ritorna_stato(enum Stato_giocatore stato);
 
@@ -47,7 +51,11 @@ const char *ritorna_oggetto(enum Tipo_oggetto oggetto);
 
 const char *ritorna_pericolo(enum Tipo_pericolo pericolo);
 
+void dimezza_mappa();
+
 void legenda();
+
+void init();
 
 void muovi(struct Giocatore* giocatore);
 
