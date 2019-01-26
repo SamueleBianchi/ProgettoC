@@ -63,8 +63,9 @@ void crea_scacchiera(){
       inizializza_zaini(&Ciccio,&Ninja);
   }
 }else{
-  clear();
-  printf("Impossibile creare la scacchiera, scacchiera già creata.\n");
+  free(scacchiera);
+  scacchiera = NULL;
+  crea_scacchiera();
 }
 }
 
@@ -73,8 +74,10 @@ void inizializza_giocatori(){
   Ciccio.y = rand() % n;
   Ninja.x = rand() % n;
   Ninja.y = rand() % n;
-  printf("Ciccio inizializzato alle coordinate (%d,%d) stato: %s\n", Ciccio.x, Ciccio.y,ritorna_stato(Ciccio.stato));
-  printf("Ninja inizializzato alle coordinate (%d,%d) stato: %s\n", Ninja.x, Ninja.y, ritorna_stato(Ninja.stato));
+  strcpy(Ciccio.nome , "Ciccio");
+  strcpy(Ninja.nome , "Ninja");
+  printf("%s inizializzato alle coordinate (%d,%d) stato: %s\n", Ciccio.nome,  Ciccio.x, Ciccio.y,ritorna_stato(Ciccio.stato));
+  printf("%s inizializzato alle coordinate (%d,%d) stato: %s\n", Ninja.nome, Ninja.x, Ninja.y, ritorna_stato(Ninja.stato));
 }
 
 void inizializza_pericoli(unsigned int n,struct Cella *scacchiera){
@@ -201,11 +204,11 @@ void gioca(){
     printf("Non puoi giocare se non crei la scacchiera!\n");
   }else{
     ++numero_giochi;
-    if(numero_giochi == 1){
-    strcpy(Ciccio.nome , "Ciccio");
-    strcpy(Ninja.nome , "Ninja");
     do{
     ++turno;
+    if((Ciccio.x == Ninja.x) && (Ciccio.y == Ninja.y)){
+      uscita = scontro_finale();
+    }
     if(turno%5 == 0){
       dimezza_mappa();
     }
@@ -218,12 +221,10 @@ void gioca(){
       uscita = gioca_turno(&Ninja,&Ciccio);
       //uscita = verifica_pericolo(&Ninja,&Ciccio);
     }
-
+    if(uscita == 0){
+      turno = 0;
+    }
   }while(uscita);
-}else{
-  clear();
-  printf("\nNon puoi rigiocare! Per creare una nuova partita devi terminare questa.");
-}
 }
 }
 
@@ -528,6 +529,8 @@ int verifica_pericolo(struct Giocatore *giocatore1, struct Giocatore *giocatore2
   switch(scacchiera[giocatore1->x*n + giocatore1->y].pericolo){
     case 1:
     printf("%s è stato ucciso da una trappola!\n%s vince la partita!\n",giocatore1->nome,giocatore2->nome);
+    free(scacchiera);
+    scacchiera = NULL;
     return 0;
     case 2:
     return combatti_alieno(&*giocatore1, &*giocatore2);
@@ -636,4 +639,33 @@ int zaino_pieno(struct Giocatore *giocatore){
   }else{
     return 0;
   }
+}
+
+void crea_torri(){
+ if(Ciccio.zaino[3]){
+ struct *Piano_C = (Struct Piano*) malloc(sizeof(Struct Piano)*Ciccio.zaino[3]);
+ for(int i = 0; i < Ciccio.zaino[3]; i++){
+   Piano_C[i]->piano = i;
+   if(i == Ciccio.zaino[3]-1){
+     Piano_C[i]->prossimo_piano = NULL;
+   }else{
+     Piano_C[i]->prossimo_piano = Piano_C[i+1];
+   }
+ }
+ }
+ if(Ninja.zaino[3]){
+ struct *Piano_N = (Struct Piano*) malloc(sizeof(Struct Piano)*Ninja.zaino[3]);
+ for(int i = 0; i < Ninja.zaino[3]; i++){
+   Piano_N[i]->piano = i;
+   if(i == Ninja.zaino[3]-1){
+     Piano_N[i]->prossimo_piano = NULL;
+   }else{
+     Piano_N[i]->prossimo_piano = Piano_N[i+1];
+   }
+ }
+ }
+}
+
+int scontro_finale(){
+  crea_torri();
 }

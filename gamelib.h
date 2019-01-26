@@ -21,6 +21,11 @@ struct Cella{
   enum Tipo_oggetto oggetto;
 };
 
+struct Piano{
+  unsigned short int piano;
+  struct Piano* prossimo_piano;
+}
+
 void crea_mappa();
 
 void gioca();
@@ -80,5 +85,9 @@ void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore
 void prendi_oggetto(struct Giocatore *giocatore1);
 
 int zaino_pieno(struct Giocatore *giocatore);
+
+int scontro_finale();
+
+void crea_torri();
 
 void clear();
