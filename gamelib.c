@@ -643,24 +643,24 @@ int zaino_pieno(struct Giocatore *giocatore){
 
 void crea_torri(){
  if(Ciccio.zaino[3]){
- struct *Piano_C = (Struct Piano*) malloc(sizeof(Struct Piano)*Ciccio.zaino[3]);
+ struct Piano *Piano_C = (struct Piano*) malloc(sizeof(struct Piano)*Ciccio.zaino[3]);
  for(int i = 0; i < Ciccio.zaino[3]; i++){
-   Piano_C[i]->piano = i;
+   (Piano_C+i)->piano = i;
    if(i == Ciccio.zaino[3]-1){
-     Piano_C[i]->prossimo_piano = NULL;
+     (Piano_C+i)->prossimo_piano = NULL;
    }else{
-     Piano_C[i]->prossimo_piano = Piano_C[i+1];
+     (Piano_C+i)->prossimo_piano = &Piano_C[i+1];
    }
  }
  }
  if(Ninja.zaino[3]){
- struct *Piano_N = (Struct Piano*) malloc(sizeof(Struct Piano)*Ninja.zaino[3]);
+ struct Piano *Piano_N = (struct Piano*) malloc(sizeof(struct Piano)*Ninja.zaino[3]);
  for(int i = 0; i < Ninja.zaino[3]; i++){
-   Piano_N[i]->piano = i;
+   (Piano_N+i)->piano = i;
    if(i == Ninja.zaino[3]-1){
-     Piano_N[i]->prossimo_piano = NULL;
+     (Piano_N+i)->prossimo_piano = NULL;
    }else{
-     Piano_N[i]->prossimo_piano = Piano_N[i+1];
+     (Piano_N+i)->prossimo_piano = &Piano_N[i+1];
    }
  }
  }
@@ -668,4 +668,5 @@ void crea_torri(){
 
 int scontro_finale(){
   crea_torri();
+  return 0;
 }

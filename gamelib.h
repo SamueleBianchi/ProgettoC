@@ -24,7 +24,7 @@ struct Cella{
 struct Piano{
   unsigned short int piano;
   struct Piano* prossimo_piano;
-}
+};
 
 void crea_mappa();
 
