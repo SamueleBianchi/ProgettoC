@@ -90,4 +90,8 @@ int scontro_finale();
 
 void crea_torri();
 
+struct Piano* crea_lista(int l);
+
+void stampa_lista(struct Piano* pFirst);
+
 void clear();

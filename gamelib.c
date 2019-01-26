@@ -208,7 +208,7 @@ void gioca(){
     ++turno;
     if((Ciccio.x == Ninja.x) && (Ciccio.y == Ninja.y)){
       uscita = scontro_finale();
-    }
+    }else{
     if(turno%5 == 0){
       dimezza_mappa();
     }
@@ -223,7 +223,7 @@ void gioca(){
     }
     if(uscita == 0){
       turno = 0;
-    }
+    }}
   }while(uscita);
 }
 }
@@ -641,30 +641,49 @@ int zaino_pieno(struct Giocatore *giocatore){
   }
 }
 
-void crea_torri(){
- if(Ciccio.zaino[3]){
- struct Piano *Piano_C = (struct Piano*) malloc(sizeof(struct Piano)*Ciccio.zaino[3]);
- for(int i = 0; i < Ciccio.zaino[3]; i++){
-   (Piano_C+i)->piano = i;
-   if(i == Ciccio.zaino[3]-1){
-     (Piano_C+i)->prossimo_piano = NULL;
-   }else{
-     (Piano_C+i)->prossimo_piano = &Piano_C[i+1];
-   }
- }
- }
- if(Ninja.zaino[3]){
- struct Piano *Piano_N = (struct Piano*) malloc(sizeof(struct Piano)*Ninja.zaino[3]);
- for(int i = 0; i < Ninja.zaino[3]; i++){
-   (Piano_N+i)->piano = i;
-   if(i == Ninja.zaino[3]-1){
-     (Piano_N+i)->prossimo_piano = NULL;
-   }else{
-     (Piano_N+i)->prossimo_piano = &Piano_N[i+1];
-   }
- }
- }
+struct Piano* crea_lista(int l){
+  static int i = 1;
+  struct Piano *pFirst = (struct Piano*) malloc(sizeof(struct Piano));
+  if(l == 0){
+    i = 1;
+    return (NULL);
+  }
+  else{
+    pFirst = (struct Piano*) malloc(sizeof(struct Piano));
+    pFirst->piano = i;
+    ++i;
+    pFirst->prossimo_piano = crea_lista(l-1);
+    return pFirst;
+  }
 }
+
+
+void stampa_lista(struct Piano* pFirst){
+  if(pFirst == NULL){
+    return;
+  }else{
+    struct Piano* pScan = pFirst;
+    stampa_lista(pScan->prossimo_piano);
+    printf("%d\n",pScan->piano) ;
+  }
+}
+
+void crea_torri(){
+  if(Ciccio.zaino[3]){
+    struct Piano *Piano_C = crea_lista(Ciccio.zaino[3]);
+    printf("Torre di %s:\n", Ciccio.nome);
+    stampa_lista(Piano_C);
+  }else{
+    printf("%s non ha materiali per costruire una torre!", Ninja.nome);
+  }
+  if(Ninja.zaino[3]){
+    struct Piano *Piano_N = crea_lista(Ninja.zaino[3]);
+    printf("Torre di %s:\n", Ninja.nome);
+    stampa_lista(Piano_N);
+  }else{
+    printf("%s non ha materiali per costruire una torre!", Ninja.nome);
+  }
+  }
 
 int scontro_finale(){
   crea_torri();
