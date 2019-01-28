@@ -673,14 +673,14 @@ void crea_torri(){
   struct Piano *Piano_C = NULL;
   struct Piano *Piano_N = NULL;
   if(Ciccio.zaino[2]){
-    Piano_C = crea_lista(Ciccio.zaino[3]);
+    Piano_C = crea_lista(Ciccio.zaino[2]);
     printf("Torre di %s:\n", Ciccio.nome);
     stampa_lista(Piano_C);
   }else{
     printf("%s non ha materiali per costruire una torre!", Ninja.nome);
   }
   if(Ninja.zaino[2]){
-    Piano_N = crea_lista(Ninja.zaino[3]);
+    Piano_N = crea_lista(Ninja.zaino[2]);
     printf("Torre di %s:\n", Ninja.nome);
     stampa_lista(Piano_N);
   }else{
@@ -689,9 +689,25 @@ void crea_torri(){
   for(int i=0; i<Ninja.zaino[3]; i++){
   aggiorna_lista(Piano_C);
   }
-  //printf("lista dopo lanciarazzi: %d\n",Piano_C->piano);
-  //stampa_lista(Piano_C);
+  for(int i=0; i<Ciccio.zaino[3]; i++){
+  aggiorna_lista(Piano_N);
+  }
+  printf("\nTORRI DOPO L'USO DEI LANCIARAZZI:\n");
+  if(Ninja.zaino[3] == Ciccio.zaino[2]){
+    Piano_C = NULL;
+    printf("La torre di Ciccio è stata distrutta!\n");
+  }else{
+    printf("Torre di Ciccio:\n");
+    stampa_lista(Piano_C);
+  }
 
+  if(Ninja.zaino[2] == Ciccio.zaino[3]){
+    Piano_N = NULL;
+    printf("La torre di Ninja è stata distrutta!\n");
+  }else{
+    printf("Torre di Ninja:\n");
+    stampa_lista(Piano_N);
+  }
   }
 
 void aggiorna_lista(struct Piano* pFirst){
