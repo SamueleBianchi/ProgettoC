@@ -12,6 +12,8 @@ static unsigned int turno = 0;
 static unsigned int numero_giochi = 0;
 unsigned short probPericoli[3];
 unsigned short probOggetti[5];
+struct Piano *Piano_C = NULL;
+struct Piano *Piano_N = NULL;
 
 // La funzione contiene il codice che deve essere eseguito runtime e deve essere scritto all'interno di una funzione
 void init(){
@@ -207,6 +209,7 @@ void gioca(){
     do{
     ++turno;
     if((Ciccio.x == Ninja.x) && (Ciccio.y == Ninja.y)){
+      clear();
       uscita = scontro_finale();
     }else{
     if(turno%5 == 0){
@@ -589,6 +592,8 @@ void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore
     giocatore1->zaino[i]=3;
     giocatore2->zaino[i]=3;
   }
+  giocatore1->zaino[3]=1;
+  giocatore2->zaino[3]=1;
 }
 
 /* La funzione permette di prendere gli oggetti che il giocatore trova quando si sposta nella mappa e avvisa il giocatore
@@ -669,20 +674,20 @@ void stampa_lista(struct Piano* pFirst){
 }
 
 void crea_torri(){
-  printf("SCONTRO FINALE\nTORRI PRIMA DELL'USO DEI LANCIARAZZI:\n");
-  struct Piano *Piano_C = NULL;
-  struct Piano *Piano_N = NULL;
+  printf("**************************SCONTRO FINALE*************************\nPrima fase:  distruzione delle torri\nTORRI PRIMA DELL'USO DEI LANCIARAZZI:\n");
   if(Ciccio.zaino[2]){
     Piano_C = crea_lista(Ciccio.zaino[2]);
     printf("Torre di %s:\n", Ciccio.nome);
     stampa_lista(Piano_C);
+    printf("\n");
   }else{
-    printf("%s non ha materiali per costruire una torre!", Ninja.nome);
+    printf("%s non ha materiali per costruire una torre!", Ciccio.nome);
   }
   if(Ninja.zaino[2]){
     Piano_N = crea_lista(Ninja.zaino[2]);
     printf("Torre di %s:\n", Ninja.nome);
     stampa_lista(Piano_N);
+    printf("\n");
   }else{
     printf("%s non ha materiali per costruire una torre!", Ninja.nome);
   }
@@ -695,19 +700,28 @@ void crea_torri(){
   printf("\nTORRI DOPO L'USO DEI LANCIARAZZI:\n");
   if(Ninja.zaino[3] == Ciccio.zaino[2]){
     Piano_C = NULL;
-    printf("La torre di Ciccio è stata distrutta!\n");
+    printf("La torre di %s è stata distrutta!\n", Ciccio.nome);
   }else{
     printf("Torre di Ciccio:\n");
     stampa_lista(Piano_C);
+    printf("\n");
   }
 
   if(Ninja.zaino[2] == Ciccio.zaino[3]){
     Piano_N = NULL;
-    printf("La torre di Ninja è stata distrutta!\n");
+    printf("La torre di %s è stata distrutta!\n", Ninja.nome);
   }else{
     printf("Torre di Ninja:\n");
     stampa_lista(Piano_N);
+    printf("\n");
   }
+  Ninja.zaino[2] = 0;
+  Ciccio.zaino[2] = 0;
+  Ciccio.zaino[3]-= Ninja.zaino[2];
+  Ninja.zaino[3]-= Ciccio.zaino[3];
+  char x;
+  printf("Premere un carattere qualsiasi e il tasto INVIO per passare alla seconda fase dello scontro finale....");
+  scanf("%s",&x);
   }
 
 void aggiorna_lista(struct Piano* pFirst){
@@ -726,8 +740,86 @@ void aggiorna_lista(struct Piano* pFirst){
 }
 }
 
+int gioca_finale(struct Giocatore* giocatore1, struct Giocatore* giocatore2, struct Piano* pianoG1, struct Piano* pianoG2){
+clear();
+int scelta = 0;
+int esci = 0;
+int r = 1;
+
+printf("E' il turno di %s.\n\n",giocatore1->nome);
+if(pianoG1 != NULL){
+printf("Stato giocatore: %s\tStato torre: attiva\n", ritorna_stato(giocatore1->stato));
+}else{
+printf("Stato giocatore: %s\tStato torre: distrutta\n", ritorna_stato(giocatore1->stato));
+}
+  do{
+
+printf("Cosa vuoi fare?\n1 - Attacca\n2 - Usa oggetto\n ");
+scanf("%d",&scelta);
+switch(scelta){
+  case 1:
+  if(pianoG2 == NULL){
+    switch(giocatore2->stato){
+      case vulnerabile:
+      clear();
+      printf("\n%s è morto! %s vince la partita!\n", giocatore2->nome, giocatore1->nome);
+      r = 0;
+      esci = 1;
+      break;
+      case solo_vita:
+      giocatore2->stato = vulnerabile;
+      esci = 1;
+      break;
+      case solo_scudo:
+      giocatore2->stato = vulnerabile;
+      esci = 1;
+      case scudo_vita:
+      giocatore2->stato = solo_vita;
+      esci = 1;
+      break;
+      default:
+      break;
+  }}else{
+  if(pianoG2->prossimo_piano == NULL){
+      printf("La torre di %s è stata colpita!",giocatore2->nome);
+    pianoG2 = NULL;
+    esci = 1;
+  }else{
+  if(pianoG2 != NULL){
+  aggiorna_lista(pianoG2);
+  printf("La torre di %s è stata colpita!",giocatore2->nome);
+  esci = 1;
+}}}
+  break;
+  case 2:
+  usa_oggetto(giocatore1);
+  esci = 1;
+  break;
+  default:
+  clear();
+  printf("Errore: opzione non valida\n");
+  break;
+}
+}while(esci == 0);
+return r;
+}
 
 int scontro_finale(){
   crea_torri();
+  clear();
+  short t = 0;
+  int uscita = 1;
+  char x;
+  printf("**************************SCONTRO FINALE*************************\nSeconda fase: scontro all'ultimo sangue\n\n");
+  printf("%s e %s stanno per combattere! Durante lo scontro è possibile utilizzare pozioni o\nmedikit per ripristinare scudo e salute, oppure attaccare l'avversario.\nSe un giocatore possiede ancora una torre, quando viene attaccato perderà solo il livello della torre e non perderà la propria vita/scudo.\nBuona fortuna!\n\nPremere un tasto per continuare...",Ciccio.nome, Ninja.nome);
+  scanf("%s",&x);
+  while(uscita){
+    t++;
+    if(t%2 == 0){
+      uscita = gioca_finale(&Ciccio,&Ninja, Piano_C, Piano_N);
+    }else{
+      uscita = gioca_finale(&Ninja,&Ciccio, Piano_N, Piano_C);
+    }
+  }
   return 0;
 }
