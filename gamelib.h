@@ -96,4 +96,6 @@ void stampa_lista(struct Piano* pFirst);
 
 void aggiorna_lista(struct Piano* pFirst);
 
+int gioca_finale(struct Giocatore* giocatore1, struct Giocatore* giocatore2, struct Piano* pianoG1, struct Piano* pianoG2);
+
 void clear();
