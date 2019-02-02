@@ -10,6 +10,7 @@ enum Tipo_oggetto {nessuno, medikit, pozione, materiale, colpi_lanciarazzi};
 struct Giocatore{
   char nome[20];
   enum Stato_giocatore stato;
+  unsigned int vittorie;
   int x;
   int y;
   int zaino[4];
@@ -96,6 +97,6 @@ void stampa_lista(struct Piano* pFirst);
 
 void aggiorna_lista(struct Piano* pFirst);
 
-int gioca_finale(struct Giocatore* giocatore1, struct Giocatore* giocatore2, struct Piano* pianoG1, struct Piano* pianoG2);
+int gioca_finale(struct Giocatore* giocatore1, struct Giocatore* giocatore2, struct Piano* pianoG1, struct Piano** pianoG2);
 
 void clear();

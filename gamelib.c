@@ -78,12 +78,11 @@ void inizializza_giocatori(){
   Ninja.y = rand() % n;
   strcpy(Ciccio.nome , "Ciccio");
   strcpy(Ninja.nome , "Ninja");
-  printf("%s inizializzato alle coordinate (%d,%d) stato: %s\n", Ciccio.nome,  Ciccio.x, Ciccio.y,ritorna_stato(Ciccio.stato));
-  printf("%s inizializzato alle coordinate (%d,%d) stato: %s\n", Ninja.nome, Ninja.x, Ninja.y, ritorna_stato(Ninja.stato));
 }
 
 void inizializza_pericoli(unsigned int n,struct Cella *scacchiera){
   int somma = 0;
+  printf("\nProbabilità dei pericoli :\n\n");
   while(somma<=100){
     printf("Inserisci la probabilità che non ci sia alcun pericolo: ");
     probPericoli[0] = verifica();
@@ -95,6 +94,7 @@ void inizializza_pericoli(unsigned int n,struct Cella *scacchiera){
     probPericoli[2] = verifica();
     somma += probPericoli[2];
     if(somma>100 || somma <100){
+      clear();
       printf("Errore: la somma delle probabilità deve essere 100, riprovare\n");
       somma = 0;
       continue;
@@ -102,6 +102,7 @@ void inizializza_pericoli(unsigned int n,struct Cella *scacchiera){
       break;
     }
   }
+  printf("\n");
   randomizza_pericoli();
 }
 
@@ -125,7 +126,7 @@ void randomizza_pericoli(){
 
 void inizializza_oggetti(unsigned int n,struct Cella *scacchiera){
   int somma = 0;
-
+  printf("\nProbabilità degli oggetti :\n\n");
   while(somma<=100){
     printf("\nInserisci la probabilità che non ci sia alcun oggetto: ");
     probOggetti[0]= verifica();
@@ -143,6 +144,7 @@ void inizializza_oggetti(unsigned int n,struct Cella *scacchiera){
     probOggetti[4]= verifica();
     somma+=probOggetti[4];
     if(somma>100 || somma <100){
+      clear();
       printf("Errore: la somma delle probabilità deve essere 100, riprovare\n");
       somma=0;
       continue;
@@ -150,6 +152,8 @@ void inizializza_oggetti(unsigned int n,struct Cella *scacchiera){
       break;
     }
   }
+  printf("\n");
+  clear();
  randomizza_oggetti();
 }
 
@@ -202,10 +206,19 @@ void termina_creazione(){
 
 void gioca(){
   int uscita = 1;
+
   if(scacchiera == NULL){
     printf("Non puoi giocare se non crei la scacchiera!\n");
   }else{
     ++numero_giochi;
+    if(numero_giochi == 1){
+      printf("\nGiocatore n1, inserisci il tuo nickname (senza spazi): \n");
+      scanf("%s", Ciccio.nome);
+      printf("\nGiocatore n2, inserisci il tuo nickname (senza spazi): \n");
+      scanf("%s", Ninja.nome);
+      Ciccio.vittorie = 0;
+      Ninja.vittorie = 0;
+    }
     do{
     ++turno;
     if((Ciccio.x == Ninja.x) && (Ciccio.y == Ninja.y)){
@@ -218,11 +231,9 @@ void gioca(){
     if(turno%2){
       clear();
       uscita = gioca_turno(&Ciccio,&Ninja);
-      //uscita = verifica_pericolo(&Ciccio,&Ninja);
     }else{
       clear();
       uscita = gioca_turno(&Ninja,&Ciccio);
-      //uscita = verifica_pericolo(&Ninja,&Ciccio);
     }
     if(uscita == 0){
       turno = 0;
@@ -232,8 +243,13 @@ void gioca(){
 }
 
 void termina_gioco(){
+  if(numero_giochi != 0){
+  clear();
+  printf("\nStatitistiche giocatori :\n\n\t%s\nWinrate: %.0f%%\nLoserate: %.0f%%\nAlieni uccisi: %zu\n\n\t%s\nWinrate: %.0f%%\nLoserate: %.0f%%\n", Ciccio.nome, (double)(((Ciccio.vittorie)/numero_giochi)*100), (double)((numero_giochi-(Ciccio.vittorie))/numero_giochi)*100, Ciccio.alieni_uccisi, Ninja.nome, (double)((Ninja.vittorie)/numero_giochi)*100, (double)((numero_giochi-Ninja.vittorie)/numero_giochi)*100);
+  printf("Alieni uccisi: %zu\n\n", Ninja.alieni_uccisi);
   free(scacchiera);
   scacchiera = NULL;
+}
 }
 
 void clear(){
@@ -415,8 +431,8 @@ int usa_oggetto(struct Giocatore *giocatore){
   for(int i=0; i<4; ++i){
     printf("%d %s\n", giocatore->zaino[i], ritorna_oggetto(i+1));
   }
-  printf("Vita attuale: %s\n",ritorna_stato(giocatore->stato));
-  printf("Cosa vuoi usare?\n1-Medikit\n2-Pozione\n3-Materiale\n4-Colpi lanciarazzi\n\n");
+  printf("\nVita attuale: %s\n",ritorna_stato(giocatore->stato));
+  printf("\nCosa vuoi usare?\n1-Medikit\n2-Pozione\n3-Materiale\n4-Colpi lanciarazzi\n\n");
   scanf("%u",&scelta);
   switch(scelta){
     case 1:
@@ -468,8 +484,12 @@ int usa_oggetto(struct Giocatore *giocatore){
     }
     break;
     case 3:
+    clear();
+    printf("Questo oggetto si può usare solo nella prima fase dello scontro finale, scegli un altro oggetto\n");
     break;
     case 4:
+    clear();
+    printf("Questo oggetto si può usare solo nella prima fase dello scontro finale, scegli un altro oggetto\n");
     break;
     default:
     clear();
@@ -498,7 +518,7 @@ int gioca_turno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
   int ritorna = 0;
   do{
 
-  printf("E' il turno di: %s\t Turno: %u\n", giocatore1->nome, turno);
+  printf("E' il turno di: %s\t Turno: %u\nCoordinate attuali: (%d, %d)\n", giocatore1->nome, turno,  giocatore1->x, giocatore1->y);
   printf("\n\tMenu di gioco:\n1-Muoviti\n2-Usa oggetto\n");
   scanf("%u",&scelta);
   switch (scelta) {
@@ -532,6 +552,7 @@ int verifica_pericolo(struct Giocatore *giocatore1, struct Giocatore *giocatore2
   switch(scacchiera[giocatore1->x*n + giocatore1->y].pericolo){
     case 1:
     printf("%s è stato ucciso da una trappola!\n%s vince la partita!\n",giocatore1->nome,giocatore2->nome);
+    giocatore2->vittorie++;
     free(scacchiera);
     scacchiera = NULL;
     return 0;
@@ -555,12 +576,13 @@ int combatti_alieno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
       case 1:
       ++giocatore1->alieni_uccisi;
       scacchiera[giocatore1->x * n + giocatore1->y].pericolo = 0;
-      printf("Alieni uccisi: %zu\nPericolo scacchiera:%d\n",giocatore1->alieni_uccisi,  scacchiera[giocatore1->x * n + giocatore1->y].pericolo);
+      printf("Hai ucciso un alieno\n");
       prendi_oggetto(&*giocatore1);
       random = rand() % 101;
       if(giocatore1->stato == vulnerabile){
         r = 0;
         printf("%s è stato ucciso durante lo scontro con l'alieno!\n%s vince la partita!\n",giocatore1->nome,giocatore2->nome);
+        giocatore2->vittorie++;
       }else{
       if(random < scudo){
         if(giocatore1->stato == solo_vita){
@@ -571,7 +593,6 @@ int combatti_alieno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
             giocatore1->stato = vulnerabile;
           }
       }}
-      printf("Numero random = %u\nStato giocatore: %d ", random, giocatore1->stato);
       e = 1;
       break;
       case 2:
@@ -600,7 +621,6 @@ void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore
  che non può prendere un determinato oggetto perche possiede il numero massimo di oggetti di quel determinato tipo. */
 
 void prendi_oggetto(struct Giocatore *giocatore1){
-  printf("Ciccio inizializzato alle coordinate (%d,%d) pericolo:%s\n", giocatore1->x, giocatore1->y, ritorna_oggetto(scacchiera[giocatore1->x * n + giocatore1->y].oggetto));
   unsigned oggetto = scacchiera[giocatore1->x * n + giocatore1->y].oggetto;
   switch(oggetto){
     case 1:
@@ -681,7 +701,7 @@ void crea_torri(){
     stampa_lista(Piano_C);
     printf("\n");
   }else{
-    printf("%s non ha materiali per costruire una torre!", Ciccio.nome);
+    printf("%s non ha materiali per costruire una torre!\n", Ciccio.nome);
   }
   if(Ninja.zaino[2]){
     Piano_N = crea_lista(Ninja.zaino[2]);
@@ -689,7 +709,7 @@ void crea_torri(){
     stampa_lista(Piano_N);
     printf("\n");
   }else{
-    printf("%s non ha materiali per costruire una torre!", Ninja.nome);
+    printf("%s non ha materiali per costruire una torre!\n", Ninja.nome);
   }
   for(int i=0; i<Ninja.zaino[3]; i++){
   aggiorna_lista(Piano_C);
@@ -698,23 +718,29 @@ void crea_torri(){
   aggiorna_lista(Piano_N);
   }
   printf("\nTORRI DOPO L'USO DEI LANCIARAZZI:\n");
-  if(Ninja.zaino[3] == Ciccio.zaino[2]){
+  if((Ninja.zaino[3] == Ciccio.zaino[2]) && Ninja.zaino[2]!= 0){
     Piano_C = NULL;
     printf("La torre di %s è stata distrutta!\n", Ciccio.nome);
   }else{
-    printf("Torre di Ciccio:\n");
+    if(Ninja.zaino[3] == Ciccio.zaino[2]){
+      printf("%s non ha torri!\n", Ciccio.nome);
+    }else{
+    printf("Torre di %s:\n", Ciccio.nome);
     stampa_lista(Piano_C);
     printf("\n");
-  }
+  }}
 
-  if(Ninja.zaino[2] == Ciccio.zaino[3]){
+  if((Ninja.zaino[2] == Ciccio.zaino[3]) && Ninja.zaino[2]!= 0){
     Piano_N = NULL;
     printf("La torre di %s è stata distrutta!\n", Ninja.nome);
   }else{
-    printf("Torre di Ninja:\n");
+    if(Ninja.zaino[2] == Ciccio.zaino[3]){
+      printf("%s non ha torri!\n", Ninja.nome);
+    }else{
+    printf("Torre di %s:\n", Ninja.nome);
     stampa_lista(Piano_N);
     printf("\n");
-  }
+  }}
   Ninja.zaino[2] = 0;
   Ciccio.zaino[2] = 0;
   Ciccio.zaino[3]-= Ninja.zaino[2];
@@ -740,12 +766,10 @@ void aggiorna_lista(struct Piano* pFirst){
 }
 }
 
-int gioca_finale(struct Giocatore* giocatore1, struct Giocatore* giocatore2, struct Piano* pianoG1, struct Piano* pianoG2){
-clear();
+int gioca_finale(struct Giocatore* giocatore1, struct Giocatore* giocatore2, struct Piano* pianoG1, struct Piano** pianoG2){
 int scelta = 0;
 int esci = 0;
 int r = 1;
-
 printf("E' il turno di %s.\n\n",giocatore1->nome);
 if(pianoG1 != NULL){
 printf("Stato giocatore: %s\tStato torre: attiva\n", ritorna_stato(giocatore1->stato));
@@ -758,11 +782,13 @@ printf("Cosa vuoi fare?\n1 - Attacca\n2 - Usa oggetto\n ");
 scanf("%d",&scelta);
 switch(scelta){
   case 1:
-  if(pianoG2 == NULL){
+  if(*pianoG2 == NULL){
+    clear();
     switch(giocatore2->stato){
       case vulnerabile:
       clear();
       printf("\n%s è morto! %s vince la partita!\n", giocatore2->nome, giocatore1->nome);
+      giocatore1->vittorie++;
       r = 0;
       esci = 1;
       break;
@@ -780,14 +806,16 @@ switch(scelta){
       default:
       break;
   }}else{
-  if(pianoG2->prossimo_piano == NULL){
-      printf("La torre di %s è stata colpita!",giocatore2->nome);
-    pianoG2 = NULL;
+  if((*pianoG2)->prossimo_piano == NULL){
+    clear();
+      printf("La torre di %s è stata colpita!\n",giocatore2->nome);
+    *pianoG2 = NULL;
     esci = 1;
   }else{
-  if(pianoG2 != NULL){
-  aggiorna_lista(pianoG2);
-  printf("La torre di %s è stata colpita!",giocatore2->nome);
+  if(*pianoG2 != NULL){
+  aggiorna_lista(*pianoG2);
+  clear();
+  printf("La torre di %s è stata colpita!\n",giocatore2->nome);
   esci = 1;
 }}}
   break;
@@ -813,13 +841,21 @@ int scontro_finale(){
   printf("**************************SCONTRO FINALE*************************\nSeconda fase: scontro all'ultimo sangue\n\n");
   printf("%s e %s stanno per combattere! Durante lo scontro è possibile utilizzare pozioni o\nmedikit per ripristinare scudo e salute, oppure attaccare l'avversario.\nSe un giocatore possiede ancora una torre, quando viene attaccato perderà solo il livello della torre e non perderà la propria vita/scudo.\nBuona fortuna!\n\nPremere un tasto per continuare...",Ciccio.nome, Ninja.nome);
   scanf("%s",&x);
+  clear();
   while(uscita){
     t++;
     if(t%2 == 0){
-      uscita = gioca_finale(&Ciccio,&Ninja, Piano_C, Piano_N);
+      uscita = gioca_finale(&Ciccio,&Ninja, Piano_C, &Piano_N);
     }else{
-      uscita = gioca_finale(&Ninja,&Ciccio, Piano_N, Piano_C);
+      uscita = gioca_finale(&Ninja,&Ciccio, Piano_N, &Piano_C);
     }
   }
+  free(scacchiera);
+  free(Piano_C);
+  free(Piano_N);
+  scacchiera = NULL;
+  Piano_C = NULL;
+  Piano_N = NULL;
+  turno = 0;
   return 0;
 }
