@@ -55,6 +55,8 @@ const char *ritorna_stato(enum Stato_giocatore stato);
 
 const char *ritorna_oggetto(enum Tipo_oggetto oggetto);
 
+const char *ritorna_oggetto2(enum Tipo_oggetto oggetto);
+
 const char *ritorna_pericolo(enum Tipo_pericolo pericolo);
 
 void dimezza_mappa();

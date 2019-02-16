@@ -14,6 +14,8 @@ unsigned short probPericoli[3];
 unsigned short probOggetti[5];
 struct Piano *Piano_C = NULL;
 struct Piano *Piano_N = NULL;
+char nome_g1[20];
+char nome_g2[20];
 
 // La funzione contiene il codice che deve essere eseguito runtime e deve essere scritto all'interno di una funzione
 void init(){
@@ -76,8 +78,8 @@ void inizializza_giocatori(){
   Ciccio.y = rand() % n;
   Ninja.x = rand() % n;
   Ninja.y = rand() % n;
-  strcpy(Ciccio.nome , "Ciccio");
-  strcpy(Ninja.nome , "Ninja");
+  strcpy(Ciccio.nome , nome_g1);
+  strcpy(Ninja.nome ,nome_g2);
 }
 
 void inizializza_pericoli(unsigned int n,struct Cella *scacchiera){
@@ -162,16 +164,16 @@ void randomizza_oggetti(){
   for(int i=0; i<n;i++){
     for(int j=0; j<n;j++){
       random = rand() % 101;
-      if(random <= probOggetti[0]){
+      if(random < probOggetti[0]){
         scacchiera[i*n+j].oggetto = 0;
       }else{
-        if(random <= probOggetti[0]+probOggetti[1]){
+        if(random < probOggetti[0]+probOggetti[1]){
           scacchiera[i*n+j].oggetto = 1;
         }else{
-          if(random <= probOggetti[0]+probOggetti[1]+probOggetti[2]){
+          if(random < probOggetti[0]+probOggetti[1]+probOggetti[2]){
             scacchiera[i*n+j].oggetto = 2;
           }else{
-            if(random <= probOggetti[0]+probOggetti[1]+probOggetti[2]+probOggetti[3]){
+            if(random < probOggetti[0]+probOggetti[1]+probOggetti[2]+probOggetti[3]){
               scacchiera[i*n+j].oggetto = 3;
             }else{
               scacchiera[i*n+j].oggetto = 4;
@@ -210,16 +212,18 @@ void gioca(){
   if(scacchiera == NULL){
     printf("Non puoi giocare se non crei la scacchiera!\n");
   }else{
+    do{
     ++numero_giochi;
     if(numero_giochi == 1){
       printf("\nGiocatore n1, inserisci il tuo nickname (senza spazi): \n");
       scanf("%s", Ciccio.nome);
+      strcpy(nome_g1, Ciccio.nome );
       printf("\nGiocatore n2, inserisci il tuo nickname (senza spazi): \n");
       scanf("%s", Ninja.nome);
+      strcpy(nome_g2, Ninja.nome );
       Ciccio.vittorie = 0;
       Ninja.vittorie = 0;
     }
-    do{
     ++turno;
     if((Ciccio.x == Ninja.x) && (Ciccio.y == Ninja.y)){
       clear();
@@ -227,6 +231,7 @@ void gioca(){
     }else{
     if(turno%5 == 0){
       dimezza_mappa();
+      printf("La mappa si è dimezzata! I giocatori hanno cambiato posizione!\n");
     }
     if(turno%2){
       clear();
@@ -245,7 +250,7 @@ void gioca(){
 void termina_gioco(){
   if(numero_giochi != 0){
   clear();
-  printf("\nStatitistiche giocatori :\n\n\t%s\nWinrate: %.0f%%\nLoserate: %.0f%%\nAlieni uccisi: %zu\n\n\t%s\nWinrate: %.0f%%\nLoserate: %.0f%%\n", Ciccio.nome, (double)(((Ciccio.vittorie)/numero_giochi)*100), (double)((numero_giochi-(Ciccio.vittorie))/numero_giochi)*100, Ciccio.alieni_uccisi, Ninja.nome, (double)((Ninja.vittorie)/numero_giochi)*100, (double)((numero_giochi-Ninja.vittorie)/numero_giochi)*100);
+  printf("\nStatitistiche giocatori :\n\n\t%s\nWinrate: %.0f%%\nLoserate: %.0f%%\nAlieni uccisi: %zu\n\n\t%s\nWinrate: %.0f%%\nLoserate: %.0f%%\n", Ciccio.nome, (float)Ciccio.vittorie/numero_giochi*100, (double)(numero_giochi-Ciccio.vittorie)/numero_giochi*100, Ciccio.alieni_uccisi, Ninja.nome, (double)Ninja.vittorie/numero_giochi*100, (double)(numero_giochi-Ninja.vittorie)/numero_giochi*100);
   printf("Alieni uccisi: %zu\n\n", Ninja.alieni_uccisi);
   free(scacchiera);
   scacchiera = NULL;
@@ -318,6 +323,28 @@ const char *ritorna_oggetto(enum Tipo_oggetto oggetto){
     break;
     case 4:
     return "Cl";
+    break;
+    default:
+    return "ERR";
+  }
+}
+
+const char *ritorna_oggetto2(enum Tipo_oggetto oggetto){
+  switch(oggetto){
+    case 0:
+    return "Nessun oggetto";
+    break;
+    case 1:
+    return "Medikit";
+    break;
+    case 2:
+    return "Pozione";
+    break;
+    case 3:
+    return "Materiale";
+    break;
+    case 4:
+    return "Colpi lanciarazzi";
     break;
     default:
     return "ERR";
@@ -432,7 +459,7 @@ int usa_oggetto(struct Giocatore *giocatore){
     printf("%d %s\n", giocatore->zaino[i], ritorna_oggetto(i+1));
   }
   printf("\nVita attuale: %s\n",ritorna_stato(giocatore->stato));
-  printf("\nCosa vuoi usare?\n1-Medikit\n2-Pozione\n3-Materiale\n4-Colpi lanciarazzi\n\n");
+  printf("\nCosa vuoi usare?\n1-Medikit\n2-Pozione\n3-Materiale\n4-Colpi lanciarazzi\n5-Esci\n\n");
   scanf("%u",&scelta);
   switch(scelta){
     case 1:
@@ -490,6 +517,9 @@ int usa_oggetto(struct Giocatore *giocatore){
     case 4:
     clear();
     printf("Questo oggetto si può usare solo nella prima fase dello scontro finale, scegli un altro oggetto\n");
+    break;
+    case 5:
+     e = 1;
     break;
     default:
     clear();
@@ -550,6 +580,10 @@ nella cella è 2, se la funzione combatti_alieno() restituisce 0 significa che i
 
 int verifica_pericolo(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
   switch(scacchiera[giocatore1->x*n + giocatore1->y].pericolo){
+    case 0:
+    prendi_oggetto(giocatore1);
+    return 1;
+    break;
     case 1:
     printf("%s è stato ucciso da una trappola!\n%s vince la partita!\n",giocatore1->nome,giocatore2->nome);
     giocatore2->vittorie++;
@@ -610,11 +644,9 @@ int combatti_alieno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
 
 void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
   for(int i = 0; i<4; i++){
-    giocatore1->zaino[i]=3;
-    giocatore2->zaino[i]=3;
+    giocatore1->zaino[i]=0;
+    giocatore2->zaino[i]=0;
   }
-  giocatore1->zaino[3]=1;
-  giocatore2->zaino[3]=1;
 }
 
 /* La funzione permette di prendere gli oggetti che il giocatore trova quando si sposta nella mappa e avvisa il giocatore
@@ -626,33 +658,38 @@ void prendi_oggetto(struct Giocatore *giocatore1){
     case 1:
     if(giocatore1->zaino[0]<3){
     ++giocatore1->zaino[0];
-    printf("Hai ottenuto 1 %s\n",ritorna_oggetto(oggetto));
+    scacchiera[giocatore1->x*n + giocatore1->y].oggetto = 0;
+    printf("Hai ottenuto 1 %s\n",ritorna_oggetto2(oggetto));
+
   }else{
-    printf("Impossibile prendere l'oggetto %s: hai raggiunto il numero massimo di oggetti da prendere di questo tipo\n",ritorna_oggetto(oggetto));
+    printf("Impossibile prendere l'oggetto %s: hai raggiunto il numero massimo di oggetti da prendere di questo tipo\n",ritorna_oggetto2(oggetto));
   }
     break;
     case 2:
     if(giocatore1->zaino[1]<3){
-      printf("Hai ottenuto 1 %s\n",ritorna_oggetto(oggetto));
+      printf("Hai ottenuto 1 %s\n",ritorna_oggetto2(oggetto));
       ++giocatore1->zaino[1];
+      scacchiera[giocatore1->x*n + giocatore1->y].oggetto = 0;
     }else{
-      printf("Impossibile prendere l'oggetto %s: hai raggiunto il numero massimo di oggetti da prendere di questo tipo\n",ritorna_oggetto(oggetto));
+      printf("Impossibile prendere l'oggetto %s: hai raggiunto il numero massimo di oggetti da prendere di questo tipo\n",ritorna_oggetto2(oggetto));
     }
     break;
     case 3:
     if(giocatore1->zaino[2]<3){
-      printf("Hai ottenuto 1 %s\n",ritorna_oggetto(oggetto));
+      printf("Hai ottenuto 1 %s\n",ritorna_oggetto2(oggetto));
       ++giocatore1->zaino[2];
+      scacchiera[giocatore1->x*n + giocatore1->y].oggetto = 0;
     }else{
-      printf("Impossibile prendere l'oggetto %s: hai raggiunto il numero massimo di oggetti da prendere di questo tipo\n",ritorna_oggetto(oggetto));
+      printf("Impossibile prendere l'oggetto %s: hai raggiunto il numero massimo di oggetti da prendere di questo tipo\n",ritorna_oggetto2(oggetto));
     }
     break;
     case 4:
     if(giocatore1->zaino[3]<3){
-      printf("Hai ottenuto 1 %s\n",ritorna_oggetto(oggetto));
+      printf("Hai ottenuto 1 %s\n",ritorna_oggetto2(oggetto));
       ++giocatore1->zaino[3];
+      scacchiera[giocatore1->x*n + giocatore1->y].oggetto = 0;
     }else{
-      printf("Impossibile prendere l'oggetto %s: hai raggiunto il numero massimo di oggetti da prendere di questo tipo\n",ritorna_oggetto(oggetto));
+      printf("Impossibile prendere l'oggetto %s: hai raggiunto il numero massimo di oggetti da prendere di questo tipo\n",ritorna_oggetto2(oggetto));
     }
     break;
   }
@@ -821,7 +858,8 @@ switch(scelta){
   break;
   case 2:
   usa_oggetto(giocatore1);
-  esci = 1;
+  clear();
+  printf("E' il turno di %s.\n\n",giocatore1->nome);
   break;
   default:
   clear();
