@@ -229,15 +229,19 @@ void gioca(){
       clear();
       uscita = scontro_finale();
     }else{
-    if(turno%5 == 0){
-      dimezza_mappa();
-      printf("La mappa si è dimezzata! I giocatori hanno cambiato posizione!\n");
-    }
     if(turno%2){
       clear();
+      if(turno%5 == 0){
+        dimezza_mappa();
+        printf("La mappa si è dimezzata! La sua nuova dimensione è %d I giocatori hanno cambiato posizione!\n",n);
+      }
       uscita = gioca_turno(&Ciccio,&Ninja);
     }else{
       clear();
+      if(turno%5 == 0){
+        dimezza_mappa();
+        printf("La mappa si è dimezzata! La sua nuova dimensione è %d I giocatori hanno cambiato posizione!\n",n);
+      }
       uscita = gioca_turno(&Ninja,&Ciccio);
     }
     if(uscita == 0){
@@ -737,6 +741,9 @@ void crea_torri(){
     printf("Torre di %s:\n", Ciccio.nome);
     stampa_lista(Piano_C);
     printf("\n");
+    for(int i=0; i<Ninja.zaino[3]; i++){
+    aggiorna_lista(Piano_C);
+    }
   }else{
     printf("%s non ha materiali per costruire una torre!\n", Ciccio.nome);
   }
@@ -745,15 +752,13 @@ void crea_torri(){
     printf("Torre di %s:\n", Ninja.nome);
     stampa_lista(Piano_N);
     printf("\n");
+    for(int i=0; i<Ciccio.zaino[3]; i++){
+    aggiorna_lista(Piano_N);
+    }
   }else{
     printf("%s non ha materiali per costruire una torre!\n", Ninja.nome);
   }
-  for(int i=0; i<Ninja.zaino[3]; i++){
-  aggiorna_lista(Piano_C);
-  }
-  for(int i=0; i<Ciccio.zaino[3]; i++){
-  aggiorna_lista(Piano_N);
-  }
+
   printf("\nTORRI DOPO L'USO DEI LANCIARAZZI:\n");
   if((Ninja.zaino[3] == Ciccio.zaino[2]) && Ninja.zaino[2]!= 0){
     Piano_C = NULL;
