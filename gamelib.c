@@ -17,13 +17,87 @@ struct Piano *Piano_N = NULL;
 char nome_g1[20];
 char nome_g2[20];
 
+static int verifica();
+
+static void crea_scacchiera();
+
+static void stampa_scacchiera();
+
+static void termina_creazione();
+
+static void inizializza_giocatori();
+
+static void inizializza_pericoli(unsigned int n,struct Cella *scacchiera);
+
+static void inizializza_oggetti(unsigned int n,struct Cella *scacchiera);
+
+static void randomizza_pericoli();
+
+static void randomizza_oggetti();
+
+static const char *ritorna_stato(enum Stato_giocatore stato);
+
+static const char *ritorna_oggetto(enum Tipo_oggetto oggetto);
+
+static const char *ritorna_oggetto2(enum Tipo_oggetto oggetto);
+
+static const char *ritorna_pericolo(enum Tipo_pericolo pericolo);
+
+static void dimezza_mappa();
+
+static void legenda();
+
+static void init();
+
+static void muovi(struct Giocatore* giocatore);
+
+static int usa_oggetto(struct Giocatore *giocatore);
+
+static int gioca_turno(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
+
+static unsigned su(struct Giocatore* giocatore);
+
+static unsigned giu(struct Giocatore* giocatore);
+
+static unsigned destra(struct Giocatore* giocatore);
+
+static unsigned sinistra(struct Giocatore* giocatore);
+
+static int verifica_pericolo(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
+
+static int combatti_alieno(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
+
+static void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
+
+static void prendi_oggetto(struct Giocatore *giocatore1);
+
+static int zaino_pieno(struct Giocatore *giocatore);
+
+static int scontro_finale();
+
+static void crea_torri();
+
+static struct Piano* crea_lista(int l);
+
+static void stampa_lista(struct Piano* pFirst);
+
+static void aggiorna_lista(struct Piano* pFirst);
+
+static int gioca_finale(struct Giocatore* giocatore1, struct Giocatore* giocatore2, struct Piano* pianoG1, struct Piano** pianoG2);
+
+
+
+
+
+
 // La funzione contiene il codice che deve essere eseguito runtime e deve essere scritto all'interno di una funzione
-void init(){
+static void init(){
   time_t t;
   srand((unsigned) time(&t));
 }
 
 void crea_mappa(){
+  init();
   clear();
   int scelta;
   do{
@@ -50,7 +124,7 @@ void crea_mappa(){
 }while(scelta > 3);
 }
 
-void crea_scacchiera(){
+static void crea_scacchiera(){
   if(scacchiera == NULL){
   clear();
   printf("Inserisci la dimensione della mappa: ");
@@ -73,7 +147,7 @@ void crea_scacchiera(){
 }
 }
 
-void inizializza_giocatori(){
+static void inizializza_giocatori(){
   Ciccio.x = rand() % n;
   Ciccio.y = rand() % n;
   Ninja.x = rand() % n;
@@ -82,7 +156,7 @@ void inizializza_giocatori(){
   strcpy(Ninja.nome ,nome_g2);
 }
 
-void inizializza_pericoli(unsigned int n,struct Cella *scacchiera){
+static void inizializza_pericoli(unsigned int n,struct Cella *scacchiera){
   int somma = 0;
   printf("\nProbabilità dei pericoli :\n\n");
   while(somma<=100){
@@ -108,7 +182,7 @@ void inizializza_pericoli(unsigned int n,struct Cella *scacchiera){
   randomizza_pericoli();
 }
 
-void randomizza_pericoli(){
+static void randomizza_pericoli(){
   int random = 0;
   for(int i=0; i<n;i++){
     for(int j=0; j<n;j++){
@@ -126,7 +200,7 @@ void randomizza_pericoli(){
     }
 }
 
-void inizializza_oggetti(unsigned int n,struct Cella *scacchiera){
+static void inizializza_oggetti(unsigned int n,struct Cella *scacchiera){
   int somma = 0;
   printf("\nProbabilità degli oggetti :\n\n");
   while(somma<=100){
@@ -159,7 +233,7 @@ void inizializza_oggetti(unsigned int n,struct Cella *scacchiera){
  randomizza_oggetti();
 }
 
-void randomizza_oggetti(){
+static void randomizza_oggetti(){
   int random = 0;
   for(int i=0; i<n;i++){
     for(int j=0; j<n;j++){
@@ -185,7 +259,7 @@ void randomizza_oggetti(){
     }
 }
 
-void stampa_scacchiera(){
+static void stampa_scacchiera(){
   clear();
   if(scacchiera == NULL){
     printf("Impossibile stampare la scacchiera: la scacchiera non è stata creata.\n");
@@ -202,7 +276,7 @@ void stampa_scacchiera(){
   }
 }
 
-void termina_creazione(){
+static void termina_creazione(){
   clear();
 }
 
@@ -271,7 +345,7 @@ void clear(){
     #endif
 }
 
-void dimezza_mappa(){
+static void dimezza_mappa(){
   free(scacchiera);
   n = n/2;
   scacchiera = (struct Cella*) malloc(n*n*sizeof(struct Cella));
@@ -280,7 +354,7 @@ void dimezza_mappa(){
   randomizza_pericoli();
 }
 
-int verifica(){
+static int verifica(){
   int num;
   do{
     scanf("%d",&num);
@@ -292,7 +366,7 @@ int verifica(){
   }while(10);
 }
 
-const char *ritorna_stato(enum Stato_giocatore stato){
+static const char *ritorna_stato(enum Stato_giocatore stato){
   switch(stato){
     case 0:
     return "Vulnerabile";
@@ -311,7 +385,7 @@ const char *ritorna_stato(enum Stato_giocatore stato){
 
 }
 
-const char *ritorna_oggetto(enum Tipo_oggetto oggetto){
+static const char *ritorna_oggetto(enum Tipo_oggetto oggetto){
   switch(oggetto){
     case 0:
     return "Ne";
@@ -333,7 +407,7 @@ const char *ritorna_oggetto(enum Tipo_oggetto oggetto){
   }
 }
 
-const char *ritorna_oggetto2(enum Tipo_oggetto oggetto){
+static const char *ritorna_oggetto2(enum Tipo_oggetto oggetto){
   switch(oggetto){
     case 0:
     return "Nessun oggetto";
@@ -355,7 +429,7 @@ const char *ritorna_oggetto2(enum Tipo_oggetto oggetto){
   }
 }
 
-const char *ritorna_pericolo(enum Tipo_pericolo pericolo){
+static const char *ritorna_pericolo(enum Tipo_pericolo pericolo){
     switch(pericolo){
       case 0:
       return "Np";
@@ -372,13 +446,13 @@ const char *ritorna_pericolo(enum Tipo_pericolo pericolo){
 
 }
 
-void legenda(){
+static void legenda(){
   printf("Legenda:\n");
   printf("\tOggetti:\n-Ne : nessun oggetto\n-Me : medikit\n-Po : pozione\n-Ma : materiale\n-Cl : colpi lanciarazzi\n");
   printf("\n\tPericoli:\n-Ne : nessun pericolo\n-Tr : trappola\n-Al : alieno\n");
 }
 
-unsigned su(struct Giocatore* giocatore){
+static unsigned su(struct Giocatore* giocatore){
   if(giocatore->x == 0){
     clear();
     printf("Non puoi sportarti sopra: sei nel bordo della mappa!\n");
@@ -400,7 +474,7 @@ unsigned giu(struct Giocatore* giocatore){
   }
 }
 
-unsigned sinistra(struct Giocatore* giocatore){
+static unsigned sinistra(struct Giocatore* giocatore){
   if(giocatore->y == 0){
     clear();
     printf("Non puoi sportarti a sinistra: sei nel bordo della mappa!\n");
@@ -411,7 +485,7 @@ unsigned sinistra(struct Giocatore* giocatore){
   }
 }
 
-unsigned destra(struct Giocatore* giocatore){
+static unsigned destra(struct Giocatore* giocatore){
   if(giocatore->y == n-1){
     clear();
     printf("Non puoi sportarti a destra: sei nel bordo della mappa!\n");
@@ -422,7 +496,7 @@ unsigned destra(struct Giocatore* giocatore){
   }
 }
 
-void muovi(struct Giocatore* giocatore){
+static void muovi(struct Giocatore* giocatore){
   unsigned e = 0;
   do{
   char scelta;
@@ -450,7 +524,7 @@ void muovi(struct Giocatore* giocatore){
 
 /* La funzione permette di usare gli oggetti e ritorna 0 se lo zaino è vuoto(quindi non è possibile utilizzare alcun oggetto),
 1 negli altri casi, in cui l'operazione è andata a buon fine. */
-int usa_oggetto(struct Giocatore *giocatore){
+static int usa_oggetto(struct Giocatore *giocatore){
   unsigned scelta = 0;
   /* Variabile "e" utilizzata per ciclare nel ciclo while fino a che l'utente non usa un oggetto nella maniera corretta
   (es: usa il medikit quando è vulnerabile e non in stato solo_vita ). */
@@ -545,7 +619,7 @@ return 1;
 /* La funzione permette di giocare il turno e ritorna 1 se il giocatore che ha giocato il turno non è morto,
 altrimenti restituisce 0 (giocatore morto) */
 
-int gioca_turno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
+static int gioca_turno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
   unsigned scelta = 0;
   unsigned e = 0;//variabile per uscire dal ciclo do-while
   char continua;
@@ -582,7 +656,7 @@ return ritorna;
 uguale a 0), ritorna 1 per default,  e ritorna il valore restituito dalla funzione combatti_alieno() se il valore del pericolo
 nella cella è 2, se la funzione combatti_alieno() restituisce 0 significa che il giocatore è morto nel combattimento. */
 
-int verifica_pericolo(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
+static int verifica_pericolo(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
   switch(scacchiera[giocatore1->x*n + giocatore1->y].pericolo){
     case 0:
     prendi_oggetto(giocatore1);
@@ -604,7 +678,7 @@ int verifica_pericolo(struct Giocatore *giocatore1, struct Giocatore *giocatore2
 /* La funzione combatti_alieno restituisce 0 se il giocatore muore durante il combattimento con l'alieno, restituisce 1 se
 il giocatore non muore, infatti la variabile r (variabile ritornata) viene inizializzata a 1. */
 
-int combatti_alieno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
+static int combatti_alieno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
   unsigned scelta = 0, e = 0,scudo = 65,random = 0;
   unsigned r = 1;//variabile di ritorno
   printf("C'è un alieno! Vuoi combatterlo? Se non lo combatti non prendi l'eventuale oggetto\n-1 Si\n-2 No\n");
@@ -646,7 +720,7 @@ int combatti_alieno(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
   return r;
 }
 
-void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
+static void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
   for(int i = 0; i<4; i++){
     giocatore1->zaino[i]=0;
     giocatore2->zaino[i]=0;
@@ -656,7 +730,7 @@ void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore
 /* La funzione permette di prendere gli oggetti che il giocatore trova quando si sposta nella mappa e avvisa il giocatore
  che non può prendere un determinato oggetto perche possiede il numero massimo di oggetti di quel determinato tipo. */
 
-void prendi_oggetto(struct Giocatore *giocatore1){
+static void prendi_oggetto(struct Giocatore *giocatore1){
   unsigned oggetto = scacchiera[giocatore1->x * n + giocatore1->y].oggetto;
   switch(oggetto){
     case 1:
@@ -699,7 +773,7 @@ void prendi_oggetto(struct Giocatore *giocatore1){
   }
 }
 
-int zaino_pieno(struct Giocatore *giocatore){
+static int zaino_pieno(struct Giocatore *giocatore){
   if(giocatore->zaino[0] == 0 && giocatore->zaino[1]== 0 && giocatore->zaino[2]== 0 && giocatore->zaino[3]==0){
     return 1;
   }else{
@@ -707,7 +781,7 @@ int zaino_pieno(struct Giocatore *giocatore){
   }
 }
 
-struct Piano* crea_lista(int l){
+static struct Piano* crea_lista(int l){
   static int i = 1;
   struct Piano *pFirst = (struct Piano*) malloc(sizeof(struct Piano));
   if(l == 0){
@@ -724,7 +798,7 @@ struct Piano* crea_lista(int l){
 }
 
 
-void stampa_lista(struct Piano* pFirst){
+static void stampa_lista(struct Piano* pFirst){
   if(pFirst == NULL){
     return;
   }else{
@@ -734,7 +808,7 @@ void stampa_lista(struct Piano* pFirst){
   }
 }
 
-void crea_torri(){
+static void crea_torri(){
   printf("**************************SCONTRO FINALE*************************\nPrima fase:  distruzione delle torri\nTORRI PRIMA DELL'USO DEI LANCIARAZZI:\n");
   if(Ciccio.zaino[2]){
     Piano_C = crea_lista(Ciccio.zaino[2]);
@@ -792,7 +866,7 @@ void crea_torri(){
   scanf("%s",&x);
   }
 
-void aggiorna_lista(struct Piano* pFirst){
+static void aggiorna_lista(struct Piano* pFirst){
   if(pFirst->prossimo_piano == NULL){
     pFirst = NULL;
   }else{
@@ -808,7 +882,7 @@ void aggiorna_lista(struct Piano* pFirst){
 }
 }
 
-int gioca_finale(struct Giocatore* giocatore1, struct Giocatore* giocatore2, struct Piano* pianoG1, struct Piano** pianoG2){
+static int gioca_finale(struct Giocatore* giocatore1, struct Giocatore* giocatore2, struct Piano* pianoG1, struct Piano** pianoG2){
 int scelta = 0;
 int esci = 0;
 int r = 1;
@@ -875,7 +949,7 @@ switch(scelta){
 return r;
 }
 
-int scontro_finale(){
+static int scontro_finale(){
   crea_torri();
   clear();
   short t = 0;
