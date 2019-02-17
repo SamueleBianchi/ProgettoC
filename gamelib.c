@@ -4,6 +4,41 @@
 #include <string.h>
 #include "gamelib.h"
 
+static int verifica();
+static void crea_scacchiera();
+static void stampa_scacchiera();
+static void termina_creazione();
+static void inizializza_giocatori();
+static void inizializza_pericoli(unsigned int n,struct Cella *scacchiera);
+static void inizializza_oggetti(unsigned int n,struct Cella *scacchiera);
+static void randomizza_pericoli();
+static void randomizza_oggetti();
+static const char *ritorna_stato(enum Stato_giocatore stato);
+static const char *ritorna_oggetto(enum Tipo_oggetto oggetto);
+static const char *ritorna_oggetto2(enum Tipo_oggetto oggetto);
+static const char *ritorna_pericolo(enum Tipo_pericolo pericolo);
+static void dimezza_mappa();
+static void legenda();
+static void init();
+static void muovi(struct Giocatore* giocatore);
+static int usa_oggetto(struct Giocatore *giocatore);
+static int gioca_turno(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
+static unsigned su(struct Giocatore* giocatore);
+static unsigned giu(struct Giocatore* giocatore);
+static unsigned destra(struct Giocatore* giocatore);
+static unsigned sinistra(struct Giocatore* giocatore);
+static int verifica_pericolo(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
+static int combatti_alieno(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
+static void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
+static void prendi_oggetto(struct Giocatore *giocatore1);
+static int zaino_pieno(struct Giocatore *giocatore);
+static int scontro_finale();
+static void crea_torri();
+static struct Piano* crea_lista(int l);
+static void stampa_lista(struct Piano* pFirst);
+static void aggiorna_lista(struct Piano* pFirst);
+static int gioca_finale(struct Giocatore* giocatore1, struct Giocatore* giocatore2, struct Piano* pianoG1, struct Piano** pianoG2);
+
 static struct Cella *scacchiera = NULL;
 static struct Giocatore Ninja;
 static struct Giocatore Ciccio;
@@ -16,79 +51,6 @@ struct Piano *Piano_C = NULL;
 struct Piano *Piano_N = NULL;
 char nome_g1[20];
 char nome_g2[20];
-
-static int verifica();
-
-static void crea_scacchiera();
-
-static void stampa_scacchiera();
-
-static void termina_creazione();
-
-static void inizializza_giocatori();
-
-static void inizializza_pericoli(unsigned int n,struct Cella *scacchiera);
-
-static void inizializza_oggetti(unsigned int n,struct Cella *scacchiera);
-
-static void randomizza_pericoli();
-
-static void randomizza_oggetti();
-
-static const char *ritorna_stato(enum Stato_giocatore stato);
-
-static const char *ritorna_oggetto(enum Tipo_oggetto oggetto);
-
-static const char *ritorna_oggetto2(enum Tipo_oggetto oggetto);
-
-static const char *ritorna_pericolo(enum Tipo_pericolo pericolo);
-
-static void dimezza_mappa();
-
-static void legenda();
-
-static void init();
-
-static void muovi(struct Giocatore* giocatore);
-
-static int usa_oggetto(struct Giocatore *giocatore);
-
-static int gioca_turno(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
-
-static unsigned su(struct Giocatore* giocatore);
-
-static unsigned giu(struct Giocatore* giocatore);
-
-static unsigned destra(struct Giocatore* giocatore);
-
-static unsigned sinistra(struct Giocatore* giocatore);
-
-static int verifica_pericolo(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
-
-static int combatti_alieno(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
-
-static void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore2);
-
-static void prendi_oggetto(struct Giocatore *giocatore1);
-
-static int zaino_pieno(struct Giocatore *giocatore);
-
-static int scontro_finale();
-
-static void crea_torri();
-
-static struct Piano* crea_lista(int l);
-
-static void stampa_lista(struct Piano* pFirst);
-
-static void aggiorna_lista(struct Piano* pFirst);
-
-static int gioca_finale(struct Giocatore* giocatore1, struct Giocatore* giocatore2, struct Piano* pianoG1, struct Piano** pianoG2);
-
-
-
-
-
 
 // La funzione contiene il codice che deve essere eseguito runtime e deve essere scritto all'interno di una funzione
 static void init(){
@@ -722,8 +684,8 @@ static int combatti_alieno(struct Giocatore *giocatore1, struct Giocatore *gioca
 
 static void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
   for(int i = 0; i<4; i++){
-    giocatore1->zaino[i]=0;
-    giocatore2->zaino[i]=0;
+    giocatore1->zaino[i]=2;
+    giocatore2->zaino[i]=2;
   }
 }
 
@@ -956,7 +918,7 @@ static int scontro_finale(){
   int uscita = 1;
   char x;
   printf("**************************SCONTRO FINALE*************************\nSeconda fase: scontro all'ultimo sangue\n\n");
-  printf("%s e %s stanno per combattere! Durante lo scontro è possibile utilizzare pozioni o\nmedikit per ripristinare scudo e salute, oppure attaccare l'avversario.\nSe un giocatore possiede ancora una torre, quando viene attaccato perderà solo il livello della torre e non perderà la propria vita/scudo.\nBuona fortuna!\n\nPremere un tasto per continuare...",Ciccio.nome, Ninja.nome);
+  printf("%s e %s stanno per combattere! Durante lo scontro è possibile utilizzare pozioni o\nmedikit per ripristinare scudo e salute ed è possibile utilizzarli senza sprecare il turno, oppure attaccare l'avversario.\nSe un giocatore possiede ancora una torre, quando viene attaccato perderà solo il livello della torre e non perderà la propria vita/scudo.\nBuona fortuna!\n\nPremere un tasto per continuare...",Ciccio.nome, Ninja.nome);
   scanf("%s",&x);
   clear();
   while(uscita){
