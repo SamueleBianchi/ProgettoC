@@ -684,8 +684,8 @@ static int combatti_alieno(struct Giocatore *giocatore1, struct Giocatore *gioca
 
 static void inizializza_zaini(struct Giocatore *giocatore1, struct Giocatore *giocatore2){
   for(int i = 0; i<4; i++){
-    giocatore1->zaino[i]=2;
-    giocatore2->zaino[i]=2;
+    giocatore1->zaino[i]=0;
+    giocatore2->zaino[i]=0;
   }
 }
 
